@@ -7,3 +7,6 @@ env/
 
 # PyCharm
 .idea/
+
+# Misc
+notes.txt
