@@ -1,3 +1,18 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-# Create your views here.
+from .models import Client, Contract, Event
+from .permissions import (
+    ClientPermissions,
+    ContractPermissions,
+    EventPermissions
+)
+from .serializers import (
+    ClientSerializer,
+    ContractSerializer,
+    EventSerializer,
+)
+
+
+
