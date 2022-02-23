@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-from datetime import datetime
-
 
 class Client(models.Model):
     first_name = models.CharField(max_length=25)
@@ -17,7 +15,7 @@ class Client(models.Model):
     status = models.CharField(
         choices=[
             ('POTENTIAL', 'POTENTIAL'),
-            ('CONVERTED', 'CONVERTED'),
+            ('EXISTING', 'EXISTING'),
             ('CONTRACT', 'CONTRACT')
         ],
         max_length=15,
@@ -38,13 +36,13 @@ class Contract(models.Model):
     payment_due = models.DateTimeField()
 
     def __str__(self):
-        created = datetime.strptime(self.date_created, '%Y-%m-%d %H:%M:%S')
+        due = self.payment_due.strftime('%Y-%m-%d')
         if self.status is False:
-            stat = "Not signed"
+            stat = "NOT SIGNED"
         else:
-            stat = "Signed"
+            stat = "SIGNED"
 
-        return f"Contract #{self.id} : {self.client} - {created} ({stat})"
+        return f"Contract #{self.id} : {self.client.last_name}, {self.client.first_name} | Due : {due} ({stat})"
 
 
 class Event(models.Model):
@@ -58,10 +56,10 @@ class Event(models.Model):
     notes = models.TextField()
 
     def __str__(self):
-        date = datetime.strptime(self.event_date, '%Y-%m-%d %H:%M:%S')
+        date = self.event_date.strftime('%Y-%m-%d')
         if self.event_status is False:
-            stat = "Upcoming"
+            stat = "UPCOMING"
         else:
-            stat = "Finished"
+            stat = "FINISHED"
 
-        return f"Event #{self.id} : {self.client} - {date} ({stat})"
+        return f"Event #{self.id} : {self.client.last_name}, {self.client.first_name} | Date : {date} ({stat})"
