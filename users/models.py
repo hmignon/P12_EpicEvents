@@ -4,6 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     phone = models.CharField(max_length=20, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
     team = models.CharField(
         choices=[
             ('MANAGEMENT', 'MANAGEMENT'),
@@ -13,6 +14,9 @@ class User(AbstractUser):
         max_length=10,
         default='MANAGEMENT'
     )
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.team})"
 
     def save(self, *args, **kwargs):
         if self.team == 'MANAGEMENT':
