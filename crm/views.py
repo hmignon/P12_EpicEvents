@@ -34,6 +34,7 @@ class ProspectList(generics.ListCreateAPIView):
         data = request.data.copy()
         data['status'] = False
         serializer = ClientSerializer(data=data)
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -54,6 +55,7 @@ class ProspectDetail(generics.UpdateAPIView):
         if data['status'] is True:
             data['sales_contact'] = request.user.id
         serializer = ClientSerializer(data=data)
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -183,7 +185,8 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         data = request.data.copy()
         if data['event_date'] < datetime.datetime.now():
             data['status'] = False
-        serializer = ClientSerializer(data=data)
+        serializer = EventSerializer(data=data)
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -194,7 +197,7 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         data = request.data.copy()
         if data['event_date'] < datetime.datetime.now():
             data['status'] = False
-        serializer = ClientSerializer(data=data)
+        serializer = EventSerializer(data=data)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
