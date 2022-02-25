@@ -9,11 +9,8 @@ class ClientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Client
-        fields = [
-            'url', 'id', 'first_name', 'last_name', 'email', 'phone', 'mobile',
-            'company_name', 'date_created', 'date_updated', 'sales_contact', 'status'
-        ]
-        read_only__fields = ('date_created', 'date_updated', 'sales_contact', 'id', 'url')
+        fields = '__all__'
+        read_only__fields = ('date_created', 'date_updated', 'sales_contact', 'id')
 
 
 class ContractSerializer(serializers.ModelSerializer):
@@ -22,11 +19,8 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = [
-            'url', 'id', 'client', 'date_created', 'date_updated', 'sales_contact',
-            'amount', 'payment_due', 'status'
-        ]
-        read_only__fields = ('date_created', 'date_updated', 'sales_contact', 'id', 'url')
+        fields = '__all__'
+        read_only__fields = ('date_created', 'date_updated', 'sales_contact', 'id')
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -34,8 +28,5 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = [
-            'url', 'id', 'client', 'date_created', 'date_updated', 'support_contact',
-            'attendees', 'event_status', 'event_date', 'notes'
-        ]
+        fields = '__all__'
         read_only__fields = ('date_created', 'date_updated', 'support_contact', 'id')

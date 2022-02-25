@@ -1,6 +1,32 @@
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class User(AbstractUser):
     phone = models.CharField(max_length=20, blank=True, null=True)
+    team = models.CharField(
+        choices=[
+            ('MANAGEMENT', 'MANAGEMENT'),
+            ('SALES', 'SALES'),
+            ('SUPPORT', 'SUPPORT')
+        ],
+        max_length=10,
+        default='MANAGEMENT'
+    )
+
+    def save(self, *args, **kwargs):
+        if self.team == 'MANAGEMENT':
+            self.is_superuser = True
+            self.is_staff = True
+        else:
+            self.is_superuser = False
+            self.is_staff = False
+
+        user = super(User, self)
+
+        if len(self.password) != 88:
+            user.set_password(self.password)
+
+        user.save()
+
+        return user
