@@ -59,7 +59,7 @@ class ProspectDetail(generics.UpdateAPIView):
                 data['sales_contact'] = request.user
         except KeyError:
             pass
-        serializer = ClientSerializer(prospect, request.data, partial=True)
+        serializer = ClientSerializer(prospect, data=data, partial=True)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()

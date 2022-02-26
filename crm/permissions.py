@@ -18,7 +18,6 @@ class ProspectPermissions(permissions.BasePermission):
         Support team : no access
     """
     def has_permission(self, request, view):
-        print("is sales")
         return request.user.team == 'SALES'
 
 
