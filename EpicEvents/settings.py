@@ -35,8 +35,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'crm.apps.CrmConfig',
-    'users.apps.UsersConfig',
     'rest_framework',
     'rest_framework_simplejwt',
     'django.contrib.admin',
@@ -45,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crm.apps.CrmConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [

@@ -11,7 +11,12 @@ class Client(models.Model):
     company_name = models.CharField(max_length=250)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    sales_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    sales_contact = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        limit_choices_to={'team': 'SALES'}
+    )
     status = models.BooleanField(default=False, verbose_name="Converted")
 
     def __str__(self):
@@ -23,8 +28,18 @@ class Client(models.Model):
 
 
 class Contract(models.Model):
-    sales_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    client = models.ForeignKey(to=Client, on_delete=models.CASCADE, related_name='contract')
+    sales_contact = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        limit_choices_to={'team': 'SALES'}
+    )
+    client = models.ForeignKey(
+        to=Client,
+        on_delete=models.CASCADE,
+        limit_choices_to={'status': True},
+        related_name='contract'
+    )
     status = models.BooleanField(default=False, verbose_name="Signed")
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -43,15 +58,25 @@ class Contract(models.Model):
 
 
 class Event(models.Model):
-    contract = models.ForeignKey(to=Contract, on_delete=models.CASCADE, related_name='event')
-    name = models.CharField(max_length=100)
+    contract = models.OneToOneField(
+        to=Contract,
+        on_delete=models.CASCADE,
+        limit_choices_to={'status': True},
+        related_name='event'
+    )
+    name = models.CharField(max_length=100, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    support_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    support_contact = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        limit_choices_to={'team': 'SUPPORT'}
+    )
     event_status = models.BooleanField(default=True, verbose_name="Upcoming")
     attendees = models.PositiveIntegerField()
     event_date = models.DateTimeField()
-    notes = models.TextField()
+    notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
         name = f"{self.contract.client.last_name}, {self.contract.client.first_name}"

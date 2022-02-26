@@ -5,29 +5,35 @@ from .models import Event, Client, Contract
 
 
 class IsManager(permissions.BasePermission):
-    """ Management team : all permissions granted """
+    """ Grant all permissions to Management """
     def has_permission(self, request, view):
-        if request.user.team == 'MANAGEMENT':
-            return True
+        if request.user.team != 'MANAGEMENT':
+            pass
+        return True
 
 
 class ProspectPermissions(permissions.BasePermission):
+    """
+        Sales team : can VIEW, CREATE and UPDATE prospects
+        Support team : no access
+    """
     def has_permission(self, request, view):
+        print("is sales")
         return request.user.team == 'SALES'
 
 
 class ClientPermissions(permissions.BasePermission):
     """
-    Sales team : can CREATE new clients or can VIEW and UPDATE their own clients
-    Support team : can VIEW their own clients
+        Sales team : can CREATE new clients
+                     can VIEW and UPDATE their own clients (sales_contact)
+        Support team : can VIEW their own clients (support_contact)
     """
     def has_permission(self, request, view):
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
             if request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
                 return client in Client.objects.filter(contract__event__support_contact=request.user.id)
-            else:
-                return request.user == client.sales_contact
+            return request.user == client.sales_contact
 
         except KeyError:
             if request.user.team == 'SUPPORT':
@@ -37,16 +43,16 @@ class ClientPermissions(permissions.BasePermission):
 
 class ContractPermissions(permissions.BasePermission):
     """
-        Sales team : can CREATE new contracts or can VIEW and UPDATE contracts of their own clients
-        Support team : can VIEW contracts of their own clients
+        Sales team : can CREATE new contracts
+                     can VIEW and UPDATE contracts of their own clients (sales_contact)
+        Support team : can VIEW contracts of their own clients (support_contact)
     """
     def has_permission(self, request, view):
         try:
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
             if request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
                 return contract in Contract.objects.filter(event__support_contact=request.user.id)
-            else:
-                return request.user == contract.sales_contact
+            return request.user == contract.sales_contact
 
         except KeyError:
             if request.user.team == 'SUPPORT':
@@ -56,16 +62,20 @@ class ContractPermissions(permissions.BasePermission):
 
 class EventPermissions(permissions.BasePermission):
     """
-        Sales team : can CREATE new events or can VIEW events of their own clients
-        Support team : can VIEW and UPDATE events of their own clients
+        Sales team : can CREATE new events
+                     can VIEW events of their own clients (sales_contact)
+        Support team : can VIEW events of their own clients
+                       can UPDATE events of their own clients (support_contact) if the event is not finished
     """
     def has_permission(self, request, view):
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
-            if request.user.team == 'SALES' and request.method in permissions.SAFE_METHODS:
-                return event in Event.objects.filter(contract__sales_contact=request.user)
-            else:
-                return request.user == event.support_contact
+            if request.method in permissions.SAFE_METHODS:
+                if request.user.team == 'SALES':
+                    return event in Event.objects.filter(contract__sales_contact=request.user)
+                elif request.user.team == 'SUPPORT':
+                    return event.support_contact == request.user
+            return request.user.team == 'SUPPORT' and event.event_status is True
 
         except KeyError:
             if request.user.team == 'SUPPORT':
