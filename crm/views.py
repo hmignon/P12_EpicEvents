@@ -47,18 +47,13 @@ class ProspectDetail(generics.UpdateAPIView):
             prospect = Client.objects.get(id=self.kwargs['pk'], status=False)
             return prospect
         except Client.DoesNotExist:
-            raise NotFound(
-                detail=f"This client is already converted and is available at /crm/clients/{self.kwargs['pk']}/"
-            )
+            raise NotFound(detail=f"This client is already converted.")
 
     def update(self, request, *args, **kwargs):
         prospect = self.get_object()
         data = request.data.copy()
-        try:
-            if data['status'] is True:
-                data['sales_contact'] = request.user
-        except KeyError:
-            pass
+        if data['status'] is True:
+            data['sales_contact'] = request.user
         serializer = ClientSerializer(prospect, data=data, partial=True)
 
         if serializer.is_valid(raise_exception=True):
@@ -103,9 +98,7 @@ class ClientDetail(generics.RetrieveUpdateAPIView):
             client = Client.objects.get(id=self.kwargs['pk'], status=True)
             return client
         except Client.DoesNotExist:
-            raise NotFound(
-                detail=f"This client is not yet converted and is available at /crm/prospects/{self.kwargs['pk']}/"
-            )
+            raise NotFound(detail=f"This client is not yet converted, go to /crm/prospects/{self.kwargs['pk']}/")
 
 
 class ContractList(generics.ListCreateAPIView):

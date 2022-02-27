@@ -6,6 +6,7 @@ from .models import Event, Client, Contract
 
 class IsManager(permissions.BasePermission):
     """ Grant all permissions to Management """
+
     def has_permission(self, request, view):
         if request.user.team != 'MANAGEMENT':
             pass
@@ -17,6 +18,7 @@ class ProspectPermissions(permissions.BasePermission):
         Sales team : can VIEW, CREATE and UPDATE prospects
         Support team : no access
     """
+
     def has_permission(self, request, view):
         return request.user.team == 'SALES'
 
@@ -27,6 +29,7 @@ class ClientPermissions(permissions.BasePermission):
                      can VIEW and UPDATE their own clients (sales_contact)
         Support team : can VIEW their own clients (support_contact)
     """
+
     def has_permission(self, request, view):
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
@@ -46,6 +49,7 @@ class ContractPermissions(permissions.BasePermission):
                      can VIEW and UPDATE contracts of their own clients (sales_contact)
         Support team : can VIEW contracts of their own clients (support_contact)
     """
+
     def has_permission(self, request, view):
         try:
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
@@ -66,6 +70,7 @@ class EventPermissions(permissions.BasePermission):
         Support team : can VIEW events of their own clients
                        can UPDATE events of their own clients (support_contact) if the event is not finished
     """
+
     def has_permission(self, request, view):
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
