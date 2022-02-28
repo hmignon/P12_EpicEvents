@@ -7,7 +7,7 @@ from .models import Client, Contract, Event
 class ClientAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Client/Prospect Info',
-         {'fields': ('last_name', 'first_name', 'email', 'phone', 'mobile', 'company_name')}),
+         {'fields': ('first_name', 'last_name', 'company_name', 'email', 'phone', 'mobile')}),
         ('Sales', {'fields': ('status', 'sales_contact')}),
         ('Info', {'fields': ('date_created', 'date_updated')})
     )

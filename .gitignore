@@ -2,7 +2,7 @@
 __pycache__/
 
 # Environments
-EpicEvents/.env
+.env
 env/
 
 # PyCharm

@@ -8,7 +8,7 @@ class Client(models.Model):
     email = models.EmailField(max_length=100)
     phone = models.CharField(max_length=20, blank=True, null=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
-    company_name = models.CharField(max_length=250)
+    company_name = models.CharField(max_length=250, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(
@@ -74,7 +74,7 @@ class Event(models.Model):
         null=True, blank=True,
         limit_choices_to={'team': 'SUPPORT'}
     )
-    event_status = models.BooleanField(default=True, verbose_name="Upcoming")
+    event_status = models.BooleanField(default=False, verbose_name="Completed")
     attendees = models.PositiveIntegerField()
     event_date = models.DateTimeField()
     notes = models.TextField(null=True, blank=True)
@@ -82,9 +82,9 @@ class Event(models.Model):
     def __str__(self):
         name = f"{self.contract.client.last_name}, {self.contract.client.first_name}"
         date = self.event_date.strftime('%Y-%m-%d')
-        if self.event_status is True:
+        if self.event_status is False:
             stat = "UPCOMING"
         else:
-            stat = "FINISHED"
+            stat = "COMPLETED"
 
         return f"Event #{self.id} : {name} | Date : {date} ({stat})"

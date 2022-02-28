@@ -4,6 +4,7 @@ from .serializers import UpdatePasswordSerializer
 
 
 class UpdatePassword(generics.UpdateAPIView):
+    http_method_names = ['put', 'options']
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UpdatePasswordSerializer
 
