@@ -17,7 +17,6 @@ class ClientPermissions(permissions.BasePermission):
     """
         Sales team : can CREATE new clients / prospects
                      can VIEW and UPDATE any prospect and their own clients
-                     can DELETE a client if not converted (prospect)
         Support team : can VIEW their own clients
     """
 
