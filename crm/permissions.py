@@ -17,16 +17,19 @@ class ClientPermissions(permissions.BasePermission):
     """
         Sales team : can CREATE new clients / prospects
                      can VIEW and UPDATE any prospect and their own clients
+                     can DELETE prospects only
         Support team : can VIEW their own clients
     """
 
     def has_permission(self, request, view):
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
-            if request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
-                return client in Client.objects.filter(contract__event__support_contact=request.user.id)
+            if request.mehtod == 'DELETE':
+                return request.user.team == 'SALES' and client.status is False
+            elif request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
+                return request.user == client.contract.event.support_contact
             elif request.user.team == 'SALES':
-                return request.user == client.sales_contact
+                return request.user == client.sales_contact or client.status is False
 
         except KeyError:
             if request.user.team == 'SUPPORT':
@@ -46,7 +49,7 @@ class ContractPermissions(permissions.BasePermission):
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
                 if request.user.team == 'SUPPORT':
-                    return contract in Contract.objects.filter(event__support_contact=request.user.id)
+                    return request.user == contract.event.support_contact
                 elif request.user.team == 'SALES':
                     return request.user == contract.sales_contact
             return request.user == contract.sales_contact and contract.status is False
@@ -69,10 +72,10 @@ class EventPermissions(permissions.BasePermission):
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
-                if request.user.team == 'SALES':
-                    return event in Event.objects.filter(contract__sales_contact=request.user)
-                elif request.user.team == 'SUPPORT':
-                    return event.support_contact == request.user
+                if request.user.team == 'SUPPORT':
+                    return request.user == event.support_contact
+                elif request.user.team == 'SALES':
+                    return request.user == event.contract.sales_contact
             return request.user == event.support_contact and event.event_status is False
 
         except KeyError:

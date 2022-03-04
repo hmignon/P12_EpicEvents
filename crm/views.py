@@ -47,23 +47,23 @@ class ClientList(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ClientDetail(generics.RetrieveUpdateAPIView):
+class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
-    http_method_names = ['get', 'put', 'options']
+    http_method_names = ['get', 'put', 'delete', 'options']
     permission_classes = [IsAuthenticated, IsManager, ClientPermissions]
     serializer_class = ClientSerializer
 
     def update(self, request, *args, **kwargs):
         client = self.get_object()
         data = request.data.copy()
+        if data['status'] is True:
+            if client.status is True:
+                return Response('Cannot change status of converted client.', status=status.HTTP_403_FORBIDDEN)
+            data['sales_contact'] = request.user.id
+
         serializer = ClientSerializer(data=data)
 
         if serializer.is_valid(raise_exception=True):
-            if serializer.validated_data['status'] is True:
-                if client.status is False:
-                    serializer.validated_data['sales_contact'] = request.user.id
-                return Response('Cannot change status of converted client.', status=status.HTTP_403_FORBIDDEN)
-
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
@@ -75,7 +75,11 @@ class ContractList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsManager, ContractPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['^client__first_name', '^client__last_name', '^client__email', '^client__company_name']
-    filterset_fields = ['status']
+    filterset_fields = {
+        'date_created': ['gte', 'lte'],
+        'payment_due': ['gte', 'lte'],
+        'status': ['exact'],
+    }
 
     def get_queryset(self):
         if self.request.user.team == 'SUPPORT':
@@ -109,9 +113,13 @@ class EventList(generics.ListCreateAPIView):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = [
         '^contract__client__first_name', '^contract__client__last_name', '^contract__client__email',
-        '^contract__client__company_name', '^name', 'event_date'
+        '^contract__client__company_name', '^name', '^location'
     ]
-    filterset_fields = ['status']
+    filterset_fields = {
+        'event_date': ['gte', 'lte'],
+        'attendees': ['gte', 'lte'],
+        'status': ['exact'],
+    }
 
     def get_queryset(self):
         if self.request.user.team == 'SUPPORT':

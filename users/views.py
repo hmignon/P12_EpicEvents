@@ -9,4 +9,4 @@ class UpdatePassword(generics.UpdateAPIView):
     serializer_class = UpdatePasswordSerializer
 
     def get_object(self):
-        return self.request.user.pk
+        return self.request.user

@@ -64,7 +64,7 @@ class Event(models.Model):
         limit_choices_to={'status': True},
         related_name='event'
     )
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
