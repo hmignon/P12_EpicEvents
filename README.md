@@ -4,7 +4,7 @@
 
 **API-EpicEvents** est une API RESTful conçue pour une entreprise de conseil et de gestion évènementielle.
 
-L'application permet aux utilisateurs de créer et mettre à jour une base de données client, 
+L'application permet aux utilisateurs de créer et mettre à jour une base de données clients, 
 de créer et d'assurer le suivi des contrats et des évènements.
 
 Une base de donnée sécurisée est mise en œuvre avec Django ORM et PostgreSQL.
@@ -68,7 +68,7 @@ python manage.py migrate
 python manage.py create superuser
 ```
 
-### Lancer le serveur Django :
+### Lancer le serveur Django
 
 ```
 python manage.py runserver
