@@ -24,7 +24,7 @@ class ClientPermissions(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
-            if request.mehtod == 'DELETE':
+            if request.method == 'DELETE':
                 return request.user.team == 'SALES' and client.status is False
             elif request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
                 return request.user == client.contract.event.support_contact
@@ -64,6 +64,7 @@ class EventPermissions(permissions.BasePermission):
     """
         Sales team : can CREATE new events
                      can VIEW events of their own clients
+                     can UPDATE events of their own clients if not finished
         Support team : can VIEW events of their own clients
                        can UPDATE events of their own clients if not finished
     """
@@ -72,11 +73,12 @@ class EventPermissions(permissions.BasePermission):
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
+                return request.user == event.support_contact or request.user == event.contract.sales_contact
+            else:
                 if request.user.team == 'SUPPORT':
-                    return request.user == event.support_contact
+                    return request.user == event.support_contact and event.event_status is False
                 elif request.user.team == 'SALES':
-                    return request.user == event.contract.sales_contact
-            return request.user == event.support_contact and event.event_status is False
+                    return request.user == event.contract.sales_contact and event.event_status is False
 
         except KeyError:
             if request.user.team == 'SUPPORT':

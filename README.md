@@ -89,7 +89,7 @@ Cet accès est possible pour tous les utilisateurs de l'équipe de gestion (mana
 
 ### Logging
 
-TBA
+L'application consigne les erreurs et exceptions dans le fichier [errors.log](errors.log).
 
 ### Tests
 

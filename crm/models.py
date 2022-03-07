@@ -44,7 +44,7 @@ class Contract(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     amount = models.FloatField()
-    payment_due = models.DateTimeField()
+    payment_due = models.DateField()
 
     def __str__(self):
         name = f"{self.client.last_name}, {self.client.first_name}"

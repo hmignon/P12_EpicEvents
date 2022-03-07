@@ -118,7 +118,7 @@ class EventList(generics.ListCreateAPIView):
     filterset_fields = {
         'event_date': ['gte', 'lte'],
         'attendees': ['gte', 'lte'],
-        'status': ['exact'],
+        'event_status': ['exact'],
     }
 
     def get_queryset(self):
@@ -130,8 +130,10 @@ class EventList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        if data['contract'].status is False:
+        contract = generics.get_object_or_404(Contract, id=data['contract'])
+        if contract.status is False:
             return Response("The contract has not been signed.", status=status.HTTP_400_BAD_REQUEST)
+
         serializer = EventSerializer(data=data)
 
         if serializer.is_valid(raise_exception=True):
@@ -142,7 +144,21 @@ class EventList(generics.ListCreateAPIView):
 
 
 class EventDetail(generics.RetrieveUpdateAPIView):
+    serializer_class = EventSerializer
     queryset = Event.objects.all()
     http_method_names = ['get', 'put', 'options']
     permission_classes = [IsAuthenticated, IsManager, EventPermissions]
-    serializer_class = EventSerializer
+
+    def update(self, request, *args, **kwargs):
+        data = request.data.copy()
+        event = generics.get_object_or_404(Event, id=self.kwargs['pk'])
+        if data['contract'] != event.contract.id:
+            return Response("You are not allowed to change the related contract", status=status.HTTP_403_FORBIDDEN)
+
+        serializer = EventSerializer(instance=event, data=data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
