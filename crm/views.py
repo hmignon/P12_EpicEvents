@@ -78,6 +78,7 @@ class ContractList(generics.ListCreateAPIView):
     filterset_fields = {
         'date_created': ['gte', 'lte'],
         'payment_due': ['gte', 'lte'],
+        'amount': ['gte', 'lte'],
         'status': ['exact'],
     }
 
