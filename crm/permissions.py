@@ -4,17 +4,9 @@ from rest_framework.generics import get_object_or_404
 from .models import Event, Client, Contract
 
 
-class IsManager(permissions.BasePermission):
-    """ Grant all permissions to Management """
-
-    def has_permission(self, request, view):
-        if request.user.team != 'MANAGEMENT':
-            pass
-        return True
-
-
 class ClientPermissions(permissions.BasePermission):
     """
+        Management : all permissions granted
         Sales team : can CREATE new clients / prospects
                      can VIEW and UPDATE any prospect and their own clients
                      can DELETE prospects only
@@ -22,12 +14,14 @@ class ClientPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        if request.user.team == 'MANAGEMENT':
+            return True
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
             if request.method == 'DELETE':
                 return request.user.team == 'SALES' and client.status is False
             elif request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
-                return request.user == client.contract.event.support_contact
+                return client in Client.objects.filter(contract__event__support_contact=request.user)
             elif request.user.team == 'SALES':
                 return request.user == client.sales_contact or client.status is False
 
@@ -39,12 +33,15 @@ class ClientPermissions(permissions.BasePermission):
 
 class ContractPermissions(permissions.BasePermission):
     """
+        Management : all permissions granted
         Sales team : can CREATE new contracts
                      can VIEW and UPDATE contracts of their own clients if not signed
         Support team : can VIEW contracts of their own clients
     """
 
     def has_permission(self, request, view):
+        if request.user.team == 'MANAGEMENT':
+            return True
         try:
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
@@ -62,6 +59,7 @@ class ContractPermissions(permissions.BasePermission):
 
 class EventPermissions(permissions.BasePermission):
     """
+        Management : all permissions granted
         Sales team : can CREATE new events
                      can VIEW events of their own clients
                      can UPDATE events of their own clients if not finished
@@ -70,6 +68,8 @@ class EventPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        if request.user.team == 'MANAGEMENT':
+            return True
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
