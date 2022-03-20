@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from users.models import SALES, SUPPORT
+
 
 class Client(models.Model):
     first_name = models.CharField(max_length=25)
@@ -15,7 +17,7 @@ class Client(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'team': 'SALES'}
+        limit_choices_to={'team': SALES}
     )
     status = models.BooleanField(default=False, verbose_name="Converted")
 
@@ -32,7 +34,7 @@ class Contract(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'team': 'SALES'}
+        limit_choices_to={'team': SALES}
     )
     client = models.ForeignKey(
         to=Client,
@@ -72,7 +74,7 @@ class Event(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'team': 'SUPPORT'}
+        limit_choices_to={'team': SUPPORT}
     )
     event_status = models.BooleanField(default=False, verbose_name="Completed")
     attendees = models.PositiveIntegerField()

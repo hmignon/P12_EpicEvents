@@ -15,6 +15,7 @@ from .serializers import (
     ContractSerializer,
     EventSerializer,
 )
+from users.models import SALES, SUPPORT
 
 
 class ClientList(generics.ListCreateAPIView):
@@ -25,9 +26,9 @@ class ClientList(generics.ListCreateAPIView):
     filterset_fields = ['status']
 
     def get_queryset(self):
-        if self.request.user.team == 'SUPPORT':
+        if self.request.user.team == SUPPORT:
             return Client.objects.filter(contract__event__support_contact=self.request.user).distinct()
-        elif self.request.user.team == 'SALES':
+        elif self.request.user.team == SALES:
             prospects = Client.objects.filter(status=False)
             own_clients = Client.objects.filter(sales_contact=self.request.user)
             return prospects | own_clients
@@ -56,9 +57,8 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
 
         if serializer.is_valid(raise_exception=True):
             client = self.get_object()
-            if client.status is True:
-                if serializer.validated_data['status'] is False:
-                    return Response('Cannot change status of converted client.', status=status.HTTP_403_FORBIDDEN)
+            if client.status is True and serializer.validated_data['status'] is False:
+                return Response('Cannot change status of converted client.', status=status.HTTP_403_FORBIDDEN)
             elif serializer.validated_data['status'] is True:
                 serializer.validated_data['sales_contact'] = request.user
 
@@ -81,9 +81,9 @@ class ContractList(generics.ListCreateAPIView):
     }
 
     def get_queryset(self):
-        if self.request.user.team == 'SUPPORT':
+        if self.request.user.team == SUPPORT:
             return Contract.objects.filter(event__support_contact=self.request.user)
-        elif self.request.user.team == 'SALES':
+        elif self.request.user.team == SALES:
             return Contract.objects.filter(sales_contact=self.request.user)
         return Contract.objects.all()
 
@@ -120,9 +120,9 @@ class EventList(generics.ListCreateAPIView):
     }
 
     def get_queryset(self):
-        if self.request.user.team == 'SUPPORT':
+        if self.request.user.team == SUPPORT:
             return Event.objects.filter(support_contact=self.request.user)
-        elif self.request.user.team == 'SALES':
+        elif self.request.user.team == SALES:
             return Event.objects.filter(contract__sales_contact=self.request.user)
         return Event.objects.all()
 
@@ -150,7 +150,7 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         serializer = EventSerializer(instance=event, data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            if request.user.team == 'SUPPORT' and serializer.validated_data['contract'] != event.contract.id:
+            if request.user.team == SUPPORT and serializer.validated_data['contract'] != event.contract.id:
                 return Response("You are not allowed to change the related contract.", status=status.HTTP_403_FORBIDDEN)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

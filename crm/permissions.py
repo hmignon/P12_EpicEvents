@@ -2,6 +2,7 @@ from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 
 from .models import Event, Client, Contract
+from users.models import MANAGEMENT, SALES, SUPPORT
 
 
 class ClientPermissions(permissions.BasePermission):
@@ -14,21 +15,21 @@ class ClientPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.team == 'MANAGEMENT':
+        if request.user.team == MANAGEMENT:
             return True
         try:
             client = get_object_or_404(Client, id=view.kwargs['pk'])
             if request.method == 'DELETE':
-                return request.user.team == 'SALES' and client.status is False
-            elif request.user.team == 'SUPPORT' and request.method in permissions.SAFE_METHODS:
+                return request.user.team == SALES and client.status is False
+            elif request.user.team == SUPPORT and request.method in permissions.SAFE_METHODS:
                 return client in Client.objects.filter(contract__event__support_contact=request.user)
-            elif request.user.team == 'SALES':
+            elif request.user.team == SALES:
                 return request.user == client.sales_contact or client.status is False
 
         except KeyError:
-            if request.user.team == 'SUPPORT':
+            if request.user.team == SUPPORT:
                 return request.method in permissions.SAFE_METHODS
-            return request.user.team == 'SALES'
+            return request.user.team == SALES
 
 
 class ContractPermissions(permissions.BasePermission):
@@ -40,21 +41,21 @@ class ContractPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.team == 'MANAGEMENT':
+        if request.user.team == MANAGEMENT:
             return True
         try:
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
-                if request.user.team == 'SUPPORT':
+                if request.user.team == SUPPORT:
                     return request.user == contract.event.support_contact
-                elif request.user.team == 'SALES':
+                elif request.user.team == SALES:
                     return request.user == contract.sales_contact
             return request.user == contract.sales_contact and contract.status is False
 
         except KeyError:
-            if request.user.team == 'SUPPORT':
+            if request.user.team == SUPPORT:
                 return request.method in permissions.SAFE_METHODS
-            return request.user.team == 'SALES'
+            return request.user.team == SALES
 
 
 class EventPermissions(permissions.BasePermission):
@@ -68,19 +69,19 @@ class EventPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.team == 'MANAGEMENT':
+        if request.user.team == MANAGEMENT:
             return True
         try:
             event = get_object_or_404(Event, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
                 return request.user == event.support_contact or request.user == event.contract.sales_contact
             else:
-                if request.user.team == 'SUPPORT':
+                if request.user.team == SUPPORT:
                     return request.user == event.support_contact and event.event_status is False
-                elif request.user.team == 'SALES':
+                elif request.user.team == SALES:
                     return request.user == event.contract.sales_contact and event.event_status is False
 
         except KeyError:
-            if request.user.team == 'SUPPORT':
+            if request.user.team == SUPPORT:
                 return request.method in permissions.SAFE_METHODS
-            return request.user.team == 'SALES'
+            return request.user.team == SALES
