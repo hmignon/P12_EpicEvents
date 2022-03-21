@@ -1,59 +1,19 @@
-from django.core.management import call_command
-from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.reverse import reverse
 
 from crm.models import Client
-from users.models import User, MANAGEMENT, SALES, SUPPORT
-
-TEST_PASSWORD = 'test_password'
-LOGIN_URL = reverse('login')
+from users.models import User
+from .setup import CustomAPITestCase
 
 
-def get_token_auth_client(user):
-    client = APIClient()
-    data = {
-        'username': user.username,
-        'password': TEST_PASSWORD,
-    }
-    response = client.post(LOGIN_URL, data, format='json')
-    token = response.data['access']
-    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-    return client
-
-
-class ClientsTests(APITestCase):
-    client_list_url = reverse('client-list')
-
-    def setUp(self):
-        User.objects.create_user(
-            id=1,
-            username='test_manager',
-            password=TEST_PASSWORD,
-            email='test_manager@email.com',
-            team=MANAGEMENT
-        )
-        User.objects.create_user(
-            id=2,
-            username='test_sales',
-            password=TEST_PASSWORD,
-            email='test_sales@email.com',
-            team=SALES
-        )
-        User.objects.create_user(
-            id=3,
-            username='test_support',
-            password=TEST_PASSWORD,
-            email='test_support@email.com',
-            team=SUPPORT
-        )
-
-        call_command('loaddata', 'crm/fixtures/data.json', verbosity=0)
+class ClientsTests(CustomAPITestCase):
+    client_list_url = reverse('crm:client_list')
 
     def test_manager_get_client_list(self):
         """Managers get all clients in database"""
         user = User.objects.get(username='test_manager')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         response = test_client.get(self.client_list_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -62,7 +22,7 @@ class ClientsTests(APITestCase):
     def test_sales_get_client_list(self):
         """Sales get their own clients and unconverted clients"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         response = test_client.get(self.client_list_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -75,7 +35,7 @@ class ClientsTests(APITestCase):
     def test_support_get_client_list(self):
         """Support get their own clients (support_contact)"""
         user = User.objects.get(username='test_support')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         response = test_client.get(self.client_list_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -86,7 +46,7 @@ class ClientsTests(APITestCase):
     def test_sales_post_prospect(self):
         """Sales can post new prospect"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
             'first_name': 'first_name',
             'last_name': 'last_name',
@@ -103,7 +63,7 @@ class ClientsTests(APITestCase):
         Check if sales_contact is user
         """
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
             'first_name': 'first_name',
             'last_name': 'last_name',
@@ -119,7 +79,7 @@ class ClientsTests(APITestCase):
     def test_support_post_client(self):
         """Support not allowed to post new clients/prospects"""
         user = User.objects.get(username='test_support')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
             'first_name': 'first_name',
             'last_name': 'last_name',
@@ -130,28 +90,40 @@ class ClientsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_post_client_incomplete_data(self):
+        """Check validation for missing fields in request"""
+        user = User.objects.get(username='test_sales')
+        test_client = self.get_token_auth_client(user)
+        response = test_client.post(self.client_list_url, data={'first_name': 'test'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_sales_get_client_detail(self):
         """Sales get client if their own client or unconverted client"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
+        id_list = self.get_id_list(Client.objects.all())
 
         for i in range(len(Client.objects.all())):
-            response = test_client.get(reverse('client-detail', kwargs={'pk': i + 1}))
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            if response.data['status'] is True:
-                self.assertEqual(Client.objects.get(id=i + 1).sales_contact, user)
+            response = test_client.get(reverse('crm:client_detail', kwargs={'pk': id_list[i]}))
+            client = Client.objects.get(id=id_list[i])
+            if client.status is True and client.sales_contact != user:
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             else:
-                self.assertFalse(Client.objects.get(id=i + 1).status)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                if response.data['status'] is True:
+                    self.assertEqual(Client.objects.get(id=id_list[i]).sales_contact, user)
+                else:
+                    self.assertFalse(Client.objects.get(id=id_list[i]).status)
 
     def test_support_get_client_detail(self):
         """Support get client only if their own client (support_contact)"""
         user = User.objects.get(username='test_support')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
 
-        response = test_client.get(reverse('client-detail', kwargs={'pk': 1}))
+        response = test_client.get(reverse('crm:client_detail', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = test_client.get(reverse('client-detail', kwargs={'pk': 3}))
+        response = test_client.get(reverse('crm:client_detail', kwargs={'pk': 3}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_sales_update_client(self):
@@ -159,7 +131,7 @@ class ClientsTests(APITestCase):
         If status is True, check if sales_contact is user
         """
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
             'first_name': 'John',
             'last_name': 'Smith',
@@ -173,27 +145,22 @@ class ClientsTests(APITestCase):
         self.assertEqual(response.data['sales_contact'], user.id)
 
     def test_update_converted_client_status(self):
-        """Sales not allowed to update client status is True"""
+        """Sales not allowed to update client status if True"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
-            'first_name': 'James',
-            'last_name': 'Miller',
-            'email': 'email@email.com',
+            'first_name': 'Jean',
+            'last_name': 'Dupont',
+            'email': 'compta-dupont@email.com',
             'status': False
         }
-        response = test_client.put('/crm/clients/1/', data)
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_403_FORBIDDEN,
-            msg='Cannot change status of converted client.'
-        )
+        test_client.put('/crm/clients/2/', data)
+        self.assertRaises(PermissionDenied, msg='Cannot change status of converted client.')
 
     def test_support_update_client(self):
         """Support not allowed to update client"""
         user = User.objects.get(username='test_support')
-        test_client = get_token_auth_client(user)
+        test_client = self.get_token_auth_client(user)
         data = {
             'first_name': 'John',
             'last_name': 'Smith',
@@ -201,21 +168,25 @@ class ClientsTests(APITestCase):
             'status': True
         }
         response = test_client.put('/crm/clients/4/', data)
-
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_client_incomplete_data(self):
+        """Check validation for missing fields in request"""
+        user = User.objects.get(username='test_sales')
+        test_client = self.get_token_auth_client(user)
+        response = test_client.put('/crm/clients/2/', data={'first_name': 'test'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sales_delete_prospect(self):
         """Sales can delete client if status is False"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
-        response = test_client.delete(reverse('client-detail', kwargs={'pk': 4}))
-
+        test_client = self.get_token_auth_client(user)
+        response = test_client.delete(reverse('crm:client_detail', kwargs={'pk': 4}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_converted_client(self):
         """Sales not allowed to delete client if status is True"""
         user = User.objects.get(username='test_sales')
-        test_client = get_token_auth_client(user)
-        response = test_client.delete(reverse('client-detail', kwargs={'pk': 1}))
-
+        test_client = self.get_token_auth_client(user)
+        response = test_client.delete(reverse('crm:client_detail', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

@@ -7,8 +7,8 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from .models import User
 
 TEST_PASSWORD = 'test_password'
-LOGIN_URL = reverse('login')
-UPDATE_PASSWORD_URL = reverse('update-password')
+LOGIN_URL = reverse('users:login')
+UPDATE_PASSWORD_URL = reverse('users:update_password')
 
 
 class LoginTests(APITestCase):

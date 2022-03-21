@@ -5,6 +5,10 @@ __pycache__/
 .env
 env/
 
+# Tests
+htmlcov/
+.coverage
+
 # PyCharm
 .idea/
 

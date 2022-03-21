@@ -10,5 +10,6 @@ with open(".env", "w") as f:
     f.write(f"SECRET_KEY={get_random_secret_key()}\n")
     f.write(f"DATABASE_USER={username}\n")
     f.write(f"DATABASE_PASS={password}\n")
+    f.close()
 
 print("\n.env file created!")

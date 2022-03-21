@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 
 from .models import Event, Client, Contract
@@ -47,9 +48,11 @@ class ContractPermissions(permissions.BasePermission):
             contract = get_object_or_404(Contract, id=view.kwargs['pk'])
             if request.method in permissions.SAFE_METHODS:
                 if request.user.team == SUPPORT:
-                    return request.user == contract.event.support_contact
+                    return contract in Contract.objects.filter(event__support_contact=request.user)
                 elif request.user.team == SALES:
                     return request.user == contract.sales_contact
+            elif request.method == 'PUT' and contract.status is True:
+                raise PermissionDenied("Cannot update a signed contract.")
             return request.user == contract.sales_contact and contract.status is False
 
         except KeyError:
@@ -76,10 +79,12 @@ class EventPermissions(permissions.BasePermission):
             if request.method in permissions.SAFE_METHODS:
                 return request.user == event.support_contact or request.user == event.contract.sales_contact
             else:
+                if event.event_status is True:
+                    raise PermissionDenied("Cannot update a finished event.")
                 if request.user.team == SUPPORT:
-                    return request.user == event.support_contact and event.event_status is False
+                    return request.user == event.support_contact
                 elif request.user.team == SALES:
-                    return request.user == event.contract.sales_contact and event.event_status is False
+                    return request.user == event.contract.sales_contact
 
         except KeyError:
             if request.user.team == SUPPORT:

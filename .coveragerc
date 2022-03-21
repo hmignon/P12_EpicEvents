@@ -1,0 +1,7 @@
+[run]
+branch = True
+omit =
+    EpicEvents/asgi.py
+    EpicEvents/wsgi.py
+    manage.py
+    setup_env.py

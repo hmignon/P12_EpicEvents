@@ -9,10 +9,12 @@ de créer et d'assurer le suivi des contrats et des évènements.
 
 Une base de donnée sécurisée est mise en œuvre avec Django ORM et PostgreSQL.
 
+_Testé sous Windows 10 - Python 3.9.5 - Django 4.0.2 - DRF 3.13.1_
+
+## Documentation
+
 Pour plus de détails sur le fonctionnement de cette API, se référer à sa 
 [documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn) (Postman).
-
-_Testé sous Windows 10 - Python 3.9.5 - Django 4.0.2 - DRF 3.13.1_
 
 ## Initialisation du projet
 
@@ -93,4 +95,15 @@ L'application consigne les erreurs et exceptions dans le fichier [errors.log](er
 
 ### Tests
 
-TBA
+Il est possible d'effectuer les tests via la commande :
+
+```
+python manage.py test
+```
+
+La couverture des tests est à 97%. Pour obtenir un rapport de couverture des tests :
+
+```
+coverage run --source='.' manage.py test
+coverage report
+```
