@@ -14,7 +14,8 @@ _Testé sous Windows 10 - Python 3.9.5 - Django 4.0.2 - DRF 3.13.1_
 ## Documentation
 
 Pour plus de détails sur le fonctionnement de cette API, se référer à sa 
-[documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn) (Postman).
+[documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn) (Postman), 
+et le [diagramme entité-relation](img/erd_epicevents.png) du CRM.
 
 ## Initialisation du projet
 
@@ -100,8 +101,12 @@ Il est possible d'effectuer les tests via la commande :
 ```
 python manage.py test
 ```
+Rapport de test le plus récent :
 
-La couverture des tests est à 97%. Pour obtenir un rapport de couverture des tests :
+![Rapport de test](img/test_report.png)
+
+Les tests couvrent 98% de l'application (voir [rapport](img/coverage_report.png) le plus récent). 
+Pour effectuer le test de couverture :
 
 ```
 coverage run --source='.' manage.py test

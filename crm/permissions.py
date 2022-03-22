@@ -1,24 +1,32 @@
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import get_object_or_404
 
-from .models import Event, Client, Contract
 from users.models import MANAGEMENT, SALES, SUPPORT
+from .models import Client, Contract
+
+
+class IsManager(permissions.BasePermission):
+    """ Managers have read_only permissions on the crm.
+    Post, put or delete has to be done via the admin site.
+    """
+    message = 'Create, update and delete objects via Admin site.'
+
+    def has_permission(self, request, view):
+        return request.user.team == MANAGEMENT and request.method in permissions.SAFE_METHODS
+
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)
 
 
 class ClientPermissions(permissions.BasePermission):
-    """
-        Management : all permissions granted
-        Sales team : can CREATE new clients / prospects
+    """ Sales team : can CREATE new clients / prospects
                      can VIEW and UPDATE any prospect and their own clients
                      can DELETE prospects only
         Support team : can VIEW their own clients
     """
 
     def has_permission(self, request, view):
-        if request.user.team == MANAGEMENT:
-            return True
-        elif request.user.team == SUPPORT:
+        if request.user.team == SUPPORT:
             return request.method in permissions.SAFE_METHODS
         return request.user.team == SALES
 
@@ -32,17 +40,13 @@ class ClientPermissions(permissions.BasePermission):
 
 
 class ContractPermissions(permissions.BasePermission):
-    """
-        Management : all permissions granted
-        Sales team : can CREATE new contracts
+    """ Sales team : can CREATE new contracts
                      can VIEW and UPDATE contracts of their own clients if not signed
         Support team : can VIEW contracts of their own clients
     """
 
     def has_permission(self, request, view):
-        if request.user.team == MANAGEMENT:
-            return True
-        elif request.user.team == SUPPORT:
+        if request.user.team == SUPPORT:
             return request.method in permissions.SAFE_METHODS
         return request.user.team == SALES
 
@@ -58,9 +62,7 @@ class ContractPermissions(permissions.BasePermission):
 
 
 class EventPermissions(permissions.BasePermission):
-    """
-        Management : all permissions granted
-        Sales team : can CREATE new events
+    """ Sales team : can CREATE new events
                      can VIEW events of their own clients
                      can UPDATE events of their own clients if not finished
         Support team : can VIEW events of their own clients
@@ -68,9 +70,7 @@ class EventPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.team == MANAGEMENT:
-            return True
-        elif request.user.team == SUPPORT:
+        if request.user.team == SUPPORT:
             return request.method in ['GET', 'PUT']
         return request.user.team == SALES
 

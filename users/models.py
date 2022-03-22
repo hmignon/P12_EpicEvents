@@ -31,10 +31,6 @@ class User(AbstractUser):
             self.is_staff = False
 
         user = super(User, self)
-
-        if len(self.password) != 88:
-            user.set_password(self.password)
-
         user.save()
 
         return user

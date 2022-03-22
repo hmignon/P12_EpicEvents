@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
-from .models import User
+from .models import User, MANAGEMENT, SALES, SUPPORT
 
 TEST_PASSWORD = 'test_password'
 LOGIN_URL = reverse('users:login')
@@ -12,7 +12,6 @@ UPDATE_PASSWORD_URL = reverse('users:update_password')
 
 
 class LoginTests(APITestCase):
-
     def setUp(self):
         User.objects.create_user(username='test_user', password=TEST_PASSWORD, email='test_user@email.com')
 
@@ -51,7 +50,6 @@ class LoginTests(APITestCase):
 
 
 class UpdatePasswordTests(APITestCase):
-
     def setUp(self):
         User.objects.create_user(username='test_user', password=TEST_PASSWORD, email='test_user@email.com')
 
@@ -100,3 +98,46 @@ class UpdatePasswordTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertRaises(ValidationError, msg="Password fields didn't match.")
+
+
+class UserModelTests(APITestCase):
+    def setUp(self):
+        User.objects.create_user(
+            id=1,
+            username='test_manager',
+            password=TEST_PASSWORD,
+            email='test_manager@email.com',
+            team=MANAGEMENT
+        )
+        User.objects.create_user(
+            id=2,
+            username='test_sales',
+            password=TEST_PASSWORD,
+            email='test_sales@email.com',
+            team=SALES
+        )
+        User.objects.create_user(
+            id=3,
+            username='test_support',
+            password=TEST_PASSWORD,
+            email='test_support@email.com',
+            team=SUPPORT
+        )
+
+    def test_str_user(self):
+        self.assertEqual(str(User.objects.get(id=1)), "test_manager (MANAGEMENT)")
+        self.assertEqual(str(User.objects.get(id=2)), "test_sales (SALES)")
+        self.assertEqual(str(User.objects.get(id=3)), "test_support (SUPPORT)")
+
+    def test_user_team_if_staff_or_superuser(self):
+        user = User.objects.get(id=1)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+
+        user = User.objects.get(id=2)
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
+        user = User.objects.get(id=3)
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)

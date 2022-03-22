@@ -5,8 +5,10 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from users.models import SALES, SUPPORT
 from .models import Client, Contract, Event
 from .permissions import (
+    IsManager,
     ClientPermissions,
     ContractPermissions,
     EventPermissions,
@@ -16,12 +18,11 @@ from .serializers import (
     ContractSerializer,
     EventSerializer,
 )
-from users.models import SALES, SUPPORT
 
 
 class ClientList(generics.ListCreateAPIView):
     serializer_class = ClientSerializer
-    permission_classes = [IsAuthenticated, ClientPermissions]
+    permission_classes = [IsAuthenticated, IsManager | ClientPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['^first_name', '^last_name', '^email', '^company_name']
     filterset_fields = ['status']
@@ -42,13 +43,12 @@ class ClientList(generics.ListCreateAPIView):
                 serializer.validated_data['sales_contact'] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
     http_method_names = ['get', 'put', 'delete', 'options']
-    permission_classes = [IsAuthenticated, ClientPermissions]
+    permission_classes = [IsAuthenticated, IsManager | ClientPermissions]
     serializer_class = ClientSerializer
 
     def update(self, request, *args, **kwargs):
@@ -61,12 +61,11 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
                 serializer.validated_data['sales_contact'] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ContractList(generics.ListCreateAPIView):
     serializer_class = ContractSerializer
-    permission_classes = [IsAuthenticated, ContractPermissions]
+    permission_classes = [IsAuthenticated, IsManager | ContractPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['^client__first_name', '^client__last_name', '^client__email', '^client__company_name']
     filterset_fields = {
@@ -92,13 +91,12 @@ class ContractList(generics.ListCreateAPIView):
             serializer.validated_data['sales_contact'] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ContractDetail(generics.RetrieveUpdateAPIView):
     queryset = Contract.objects.all()
     http_method_names = ['get', 'put', 'options']
-    permission_classes = [IsAuthenticated, ContractPermissions]
+    permission_classes = [IsAuthenticated, IsManager | ContractPermissions]
     serializer_class = ContractSerializer
 
     def update(self, request, *args, **kwargs):
@@ -106,12 +104,11 @@ class ContractDetail(generics.RetrieveUpdateAPIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventList(generics.ListCreateAPIView):
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated, EventPermissions]
+    permission_classes = [IsAuthenticated, IsManager | EventPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = [
         '^contract__client__first_name', '^contract__client__last_name', '^contract__client__email',
@@ -138,13 +135,12 @@ class EventList(generics.ListCreateAPIView):
                 raise ValidationError("The contract is not signed.")
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventDetail(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     http_method_names = ['get', 'put', 'options']
-    permission_classes = [IsAuthenticated, EventPermissions]
+    permission_classes = [IsAuthenticated, IsManager | EventPermissions]
     serializer_class = EventSerializer
 
     def update(self, request, *args, **kwargs):
@@ -156,4 +152,3 @@ class EventDetail(generics.RetrieveUpdateAPIView):
             serializer.validated_data['support_contact'] = event.support_contact
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
