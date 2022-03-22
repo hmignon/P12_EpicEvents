@@ -102,6 +102,7 @@ class ContractDetail(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         serializer = ContractSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            serializer.validated_data['sales_contact'] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
