@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, generics
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -53,10 +53,10 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         client = self.get_object()
-        serializer = ClientSerializer(data=request.data)
+        serializer = ClientSerializer(data=request.data, instance=client)
         if serializer.is_valid(raise_exception=True):
             if client.status is True and serializer.validated_data['status'] is False:
-                raise PermissionDenied("Cannot change status of converted client.")
+                raise ValidationError("Cannot change status of converted client.")
             elif serializer.validated_data['status'] is True:
                 serializer.validated_data['sales_contact'] = request.user
             serializer.save()
@@ -85,9 +85,6 @@ class ContractList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ContractSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            client = generics.get_object_or_404(Client, id=serializer.validated_data['client'].id)
-            if client.status is False:
-                raise ValidationError("The client is not converted.")
             serializer.validated_data['sales_contact'] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -100,7 +97,7 @@ class ContractDetail(generics.RetrieveUpdateAPIView):
     serializer_class = ContractSerializer
 
     def update(self, request, *args, **kwargs):
-        serializer = ContractSerializer(data=request.data)
+        serializer = ContractSerializer(data=request.data, instance=self.get_object())
         if serializer.is_valid(raise_exception=True):
             serializer.validated_data['sales_contact'] = request.user
             serializer.save()
@@ -131,9 +128,6 @@ class EventList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = EventSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            contract = generics.get_object_or_404(Contract, id=serializer.validated_data['contract'].id)
-            if contract.status is False:
-                raise ValidationError("The contract is not signed.")
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -149,7 +143,7 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         serializer = EventSerializer(instance=event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             if serializer.validated_data['contract'] != event.contract:
-                raise PermissionDenied("You are not allowed to change the related contract.")
+                raise ValidationError("Cannot change the related contract.")
             serializer.validated_data['support_contact'] = event.support_contact
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

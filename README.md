@@ -84,11 +84,30 @@ Il est possible de naviguer dans l'API avec différents outils :
 - la plateforme [Postman](https://www.postman.com/) ;
 - l'outil de commandes [cURL](https://curl.se)
 
+Note : l'accès au CRM par les managers et admins est en lecture seule. 
+La création, modification ou suppression d'éléments est possible via le site d'administration.
+
 ### Administration
 
-Le site d'administration Django est accessible via http://127.0.0.1:8000/admin/
-
+Le site d'administration Django est accessible via http://127.0.0.1:8000/admin/.
 Cet accès est possible pour tous les utilisateurs de l'équipe de gestion (management) et les superusers.
+
+Ci-dessous, quelques exemples de l'interface du site d'administration ;
+
+- **Liste des utilisateurs :**
+![Admin users](img/admin_users.png)
+
+
+- **Liste des clients :**
+![Admin clients](img/admin_clients.png)
+
+
+- **Liste des contrats :**
+![Admin contracts](img/admin_contracts.png)
+
+
+- **Liste des événements :**
+![Admin events](img/admin_events.png)
 
 ### Logging
 
@@ -96,19 +115,13 @@ L'application consigne les erreurs et exceptions dans le fichier [errors.log](er
 
 ### Tests
 
-Il est possible d'effectuer les tests via la commande :
+Il est possible d'effectuer les tests via la commande ```python manage.py test```. 
 
-```
-python manage.py test
-```
-Rapport de test le plus récent :
-
+> *Rapport de test le plus récent*
 ![Rapport de test](img/test_report.png)
 
-Les tests couvrent 98% de l'application (voir [rapport](img/coverage_report.png) le plus récent). 
-Pour effectuer le test de couverture :
 
-```
-coverage run --source='.' manage.py test
-coverage report
-```
+Pour effectuer le test de couverture : ```coverage run --source='.' manage.py test``` puis ```coverage report```.
+
+> *Rapport de couverture le plus récent*
+![Rapport de test](img/coverage_report.png)

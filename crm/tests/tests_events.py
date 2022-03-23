@@ -252,4 +252,4 @@ class EventDetailTests(CustomAPITestCase):
             'notes': 'Example note'
         }
         test_client.put('/crm/events/1/', data)
-        self.assertRaises(PermissionDenied, msg='You are not allowed to change the related contract.')
+        self.assertRaises(ValidationError, msg='Cannot change the related contract.')

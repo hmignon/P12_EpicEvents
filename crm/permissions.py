@@ -35,8 +35,7 @@ class ClientPermissions(permissions.BasePermission):
             return request.user.team == SALES and obj.status is False
         elif request.user.team == SUPPORT and request.method in permissions.SAFE_METHODS:
             return obj in Client.objects.filter(contract__event__support_contact=request.user)
-        elif request.user.team == SALES:
-            return request.user == obj.sales_contact or obj.status is False
+        return request.user == obj.sales_contact or obj.status is False
 
 
 class ContractPermissions(permissions.BasePermission):
@@ -54,8 +53,7 @@ class ContractPermissions(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             if request.user.team == SUPPORT:
                 return obj in Contract.objects.filter(event__support_contact=request.user)
-            elif request.user.team == SALES:
-                return request.user == obj.sales_contact
+            return request.user == obj.sales_contact
         elif request.method == 'PUT' and obj.status is True:
             raise PermissionDenied("Cannot update a signed contract.")
         return request.user == obj.sales_contact and obj.status is False
@@ -82,5 +80,4 @@ class EventPermissions(permissions.BasePermission):
                 raise PermissionDenied("Cannot update a finished event.")
             if request.user.team == SUPPORT:
                 return request.user == obj.support_contact
-            elif request.user.team == SALES:
-                return request.user == obj.contract.sales_contact
+            return request.user == obj.contract.sales_contact

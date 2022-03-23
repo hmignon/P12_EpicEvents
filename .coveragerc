@@ -5,3 +5,8 @@ omit =
     EpicEvents/wsgi.py
     manage.py
     setup_env.py
+    */__init__.py
+    */migrations/*
+
+[report]
+skip_empty = true

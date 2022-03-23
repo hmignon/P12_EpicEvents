@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.reverse import reverse
 
 from crm.models import Client
@@ -62,7 +62,7 @@ class ClientListTests(CustomAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual('test_client@email.com', response.data['email'])
 
-    def test_sales_post_client(self):
+    def test_sales_post_client_status_true(self):
         """Sales can post new client
         Check if sales_contact is user
         """
@@ -79,6 +79,24 @@ class ClientListTests(CustomAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('test_client@email.com', response.data['email'])
         self.assertEqual(user.id, response.data['sales_contact'])
+
+    def test_sales_post_client_status_false(self):
+        """Sales can post new prospect
+        Check if sales_contact is None
+        """
+        user = User.objects.get(username='test_sales')
+        test_client = self.get_token_auth_client(user)
+        data = {
+            'first_name': 'first_name',
+            'last_name': 'last_name',
+            'email': 'test_client@email.com',
+            'status': False
+        }
+        response = test_client.post(self.client_list_url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('test_client@email.com', response.data['email'])
+        self.assertEqual(response.data['sales_contact'], None)
 
     def test_post_client_incomplete_data(self):
         """Check validation for missing fields in request"""
@@ -174,7 +192,7 @@ class ClientDetailTests(CustomAPITestCase):
             'status': False
         }
         test_client.put('/crm/clients/2/', data)
-        self.assertRaises(PermissionDenied, msg='Cannot change status of converted client.')
+        self.assertRaises(ValidationError, msg='Cannot change status of converted client.')
 
     def test_sales_delete_prospect(self):
         """Sales can delete client if status is False"""
