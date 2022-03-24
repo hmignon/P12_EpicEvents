@@ -117,11 +117,13 @@ L'application consigne les erreurs et exceptions dans le fichier [errors.log](er
 
 Il est possible d'effectuer les tests via la commande ```python manage.py test```. 
 
-> *Rapport de test le plus récent*
+- *Rapport de test le plus récent*
+
 ![Rapport de test](img/test_report.png)
 
 
 Pour effectuer le test de couverture : ```coverage run --source='.' manage.py test``` puis ```coverage report```.
 
-> *Rapport de couverture le plus récent*
+- *Rapport de couverture le plus récent*
+
 ![Rapport de test](img/coverage_report.png)

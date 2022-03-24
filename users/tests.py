@@ -1,8 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase
-from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
 from .models import User, MANAGEMENT, SALES, SUPPORT
 
@@ -35,7 +33,7 @@ class LoginTests(APITestCase):
         response = self.client.post(LOGIN_URL, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertRaises(AuthenticationFailed, msg='No active account found with the given credentials')
+        self.assertEqual(response.json(), {"detail": 'No active account found with the given credentials'})
 
     def test_login_wrong_password(self):
         user = User.objects.get(username='test_user')
@@ -46,7 +44,7 @@ class LoginTests(APITestCase):
         response = self.client.post(LOGIN_URL, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertRaises(AuthenticationFailed, msg='No active account found with the given credentials')
+        self.assertEqual(response.json(), {"detail": 'No active account found with the given credentials'})
 
 
 class UpdatePasswordTests(APITestCase):
@@ -85,7 +83,7 @@ class UpdatePasswordTests(APITestCase):
         response = client.put(UPDATE_PASSWORD_URL, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertRaises(ValidationError, msg="Old password is not correct.")
+        self.assertEqual(response.json(), {'old_password': {'old_password': 'Old password is not correct.'}})
 
     def test_non_identical_new_passwords(self):
         client = self.get_token_auth_client()
@@ -97,7 +95,7 @@ class UpdatePasswordTests(APITestCase):
         response = client.put(UPDATE_PASSWORD_URL, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertRaises(ValidationError, msg="Password fields didn't match.")
+        self.assertEqual(response.json(), {"password": ["Password fields didn't match."]})
 
 
 class UserModelTests(APITestCase):

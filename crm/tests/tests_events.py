@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.reverse import reverse
 
 from crm.models import Client, Contract, Event
@@ -30,8 +29,8 @@ class EventListTests(CustomAPITestCase):
             'payment_due': '2022-10-09',
             'status': False
         }
-        test_client.post(self.event_list_url, data, format='json')
-        self.assertRaises(PermissionDenied, msg='Create, update and delete objects via Admin site.')
+        response = test_client.post(self.event_list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # --- Sales ---
     def test_sales_get_event_list(self):
@@ -72,9 +71,9 @@ class EventListTests(CustomAPITestCase):
             'attendees': 50,
             'event_date': '2022-10-09'
         }
-        test_client.post(self.event_list_url, data, format='json')
+        response = test_client.post(self.event_list_url, data, format='json')
 
-        self.assertRaises(ValidationError, msg="The contract is not signed.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sales_post_event_incomplete_data(self):
         """Check validation for missing fields in request"""
@@ -166,8 +165,9 @@ class EventDetailTests(CustomAPITestCase):
             'attendees': 78,
             'event_date': '2022-09-10'
         }
-        test_client.put('/crm/events/3/', data)
-        self.assertRaises(ValidationError, msg='Cannot update a finished event.')
+        response = test_client.put('/crm/events/3/', data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.json(), {"detail": "Cannot update a finished event."})
 
     def test_sales_update_event_contract(self):
         """Sales not allowed to update contract related to an event"""
@@ -184,8 +184,9 @@ class EventDetailTests(CustomAPITestCase):
             'event_date': '2022-09-10',
             'notes': 'Example note'
         }
-        test_client.put('/crm/events/1/', data)
-        self.assertRaises(PermissionDenied, msg='You are not allowed to change the related contract.')
+        response = test_client.put('/crm/events/1/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {"detail": "Cannot change the related contract."})
 
     def test_update_event_incomplete_data(self):
         """Check validation for missing fields in request"""
@@ -233,8 +234,10 @@ class EventDetailTests(CustomAPITestCase):
             'attendees': 78,
             'event_date': '2022-09-10'
         }
-        test_client.put('/crm/events/3/', data)
-        self.assertRaises(ValidationError, msg='Cannot update a finished event.')
+        response = test_client.put('/crm/events/3/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.json(), {"detail": "Cannot update a finished event."})
 
     def test_support_update_event_contract(self):
         """Support not allowed to update contract related to an event"""
@@ -251,5 +254,7 @@ class EventDetailTests(CustomAPITestCase):
             'event_date': '2022-09-10',
             'notes': 'Example note'
         }
-        test_client.put('/crm/events/1/', data)
-        self.assertRaises(ValidationError, msg='Cannot change the related contract.')
+        response = test_client.put('/crm/events/1/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {"detail": "Cannot change the related contract."})

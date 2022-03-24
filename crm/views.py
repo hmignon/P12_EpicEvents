@@ -56,7 +56,7 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = ClientSerializer(data=request.data, instance=client)
         if serializer.is_valid(raise_exception=True):
             if client.status is True and serializer.validated_data['status'] is False:
-                raise ValidationError("Cannot change status of converted client.")
+                raise ValidationError({"detail": "Cannot change status of converted client."})
             elif serializer.validated_data['status'] is True:
                 serializer.validated_data['sales_contact'] = request.user
             serializer.save()
@@ -143,7 +143,7 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         serializer = EventSerializer(instance=event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             if serializer.validated_data['contract'] != event.contract:
-                raise ValidationError("Cannot change the related contract.")
+                raise ValidationError({"detail": "Cannot change the related contract."})
             serializer.validated_data['support_contact'] = event.support_contact
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

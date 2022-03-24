@@ -9,7 +9,6 @@ class IsManager(permissions.BasePermission):
     """ Managers have read_only permissions on the crm.
     Post, put or delete has to be done via the admin site.
     """
-    message = 'Create, update and delete objects via Admin site.'
 
     def has_permission(self, request, view):
         return request.user.team == MANAGEMENT and request.method in permissions.SAFE_METHODS

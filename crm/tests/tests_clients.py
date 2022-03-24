@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.reverse import reverse
 
 from crm.models import Client
@@ -30,8 +29,8 @@ class ClientListTests(CustomAPITestCase):
             'email': 'test_client@email.com',
             'status': False
         }
-        test_client.post(self.client_list_url, data, format='json')
-        self.assertRaises(PermissionDenied, msg='Create, update and delete objects via Admin site.')
+        response = test_client.post(self.client_list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # --- Sales ---
     def test_sales_get_client_list(self):
@@ -163,7 +162,7 @@ class ClientDetailTests(CustomAPITestCase):
                 else:
                     self.assertFalse(Client.objects.get(id=id_list[i]).status)
 
-    def test_sales_update_client(self):
+    def test_sales_update_client_status_true(self):
         """Sales can update client if their own client or unconverted client
         If updated status is True, check if sales_contact is user
         """
@@ -181,6 +180,24 @@ class ClientDetailTests(CustomAPITestCase):
         self.assertEqual('updated_email@email.com', response.data['email'])
         self.assertEqual(response.data['sales_contact'], user.id)
 
+    def test_sales_update_client_status_false(self):
+        """Sales can update client if their own client or unconverted client
+        If updated status is False, check if sales_contact is None
+        """
+        user = User.objects.get(username='test_sales')
+        test_client = self.get_token_auth_client(user)
+        data = {
+            'first_name': 'Michel',
+            'last_name': 'Leblanc',
+            'email': 'updated_email@email.com',
+            'status': False
+        }
+        response = test_client.put('/crm/clients/4/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('updated_email@email.com', response.data['email'])
+        self.assertEqual(response.data['sales_contact'], None)
+
     def test_sales_update_converted_client_status(self):
         """Sales not allowed to update client status if True"""
         user = User.objects.get(username='test_sales')
@@ -191,8 +208,9 @@ class ClientDetailTests(CustomAPITestCase):
             'email': 'compta-dupont@email.com',
             'status': False
         }
-        test_client.put('/crm/clients/2/', data)
-        self.assertRaises(ValidationError, msg='Cannot change status of converted client.')
+        response = test_client.put('/crm/clients/2/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {"detail": "Cannot change status of converted client."})
 
     def test_sales_delete_prospect(self):
         """Sales can delete client if status is False"""

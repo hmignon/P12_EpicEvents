@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.reverse import reverse
 
 from crm.models import Client, Contract
@@ -30,8 +29,8 @@ class ContractListTests(CustomAPITestCase):
             'payment_due': '2022-10-09',
             'status': False
         }
-        test_client.post(self.contract_list_url, data, format='json')
-        self.assertRaises(PermissionDenied, msg='Create, update and delete objects via Admin site.')
+        response = test_client.post(self.contract_list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # --- Sales ---
     def test_sales_get_contract_list(self):
@@ -72,8 +71,8 @@ class ContractListTests(CustomAPITestCase):
             'payment_due': '2022-10-09',
             'status': False
         }
-        test_client.post(self.contract_list_url, data, format='json')
-        self.assertRaises(ValidationError, msg='The client is not converted.')
+        response = test_client.post(self.contract_list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_contract_incomplete_data(self):
         """Check validation for missing fields in request"""
@@ -160,8 +159,9 @@ class ContractDetailTests(CustomAPITestCase):
             'payment_due': '2022-10-09',
             'status': True
         }
-        test_client.put('/crm/contracts/3/', data)
-        self.assertRaises(PermissionDenied, msg='Cannot update a signed contract.')
+        response = test_client.put('/crm/contracts/3/', data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.json(), {"detail": "Cannot update a signed contract."})
 
     def test_update_contract_incomplete_data(self):
         """Check validation for missing fields in request"""
