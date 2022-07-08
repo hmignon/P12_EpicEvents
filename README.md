@@ -53,7 +53,7 @@ Créer la base de données avec SQL shell (psql) : ```CREATE DATABASE epic_event
 
 ### Variables d'environnement
 
-Pour générer un fichier .env, lancer le script ```python setup_env.py```.
+Pour générer un fichier .env, lancer le script ```python create_dot_env.py```.
 Entrer le nom d'utilisateur et le mot de passe de la base de données précédemment créée.
 
 Une clé secrète Django sera automatiquement générée.

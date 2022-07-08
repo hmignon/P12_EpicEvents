@@ -11,9 +11,9 @@ class ModelsTests(CustomAPITestCase):
 
     def test_str_contract(self):
         contract = Contract.objects.get(id=1)
-        self.assertEqual(str(contract), "Contract #1 : Miller, James | Due : 2022-02-27 (SIGNED)")
+        self.assertEqual(str(contract), "Contract #1 : Miller, James (SIGNED)")
         contract = Contract.objects.get(id=2)
-        self.assertEqual(str(contract), "Contract #2 : Dupont, Jean | Due : 2022-04-13 (NOT SIGNED)")
+        self.assertEqual(str(contract), "Contract #2 : Dupont, Jean (NOT SIGNED)")
 
     def test_str_event(self):
         event = Event.objects.get(id=1)

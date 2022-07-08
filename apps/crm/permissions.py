@@ -34,7 +34,7 @@ class ClientPermissions(permissions.BasePermission):
             return request.user.team.name == SALES and obj.status is False
         elif request.user.team.name == SUPPORT and request.method in permissions.SAFE_METHODS:
             return obj in Client.objects.filter(contract__event__support_contact=request.user)
-        return request.user.name == obj.sales_contact or obj.status is False
+        return request.user == obj.sales_contact or obj.status is False
 
 
 class ContractPermissions(permissions.BasePermission):

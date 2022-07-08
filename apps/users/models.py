@@ -26,8 +26,8 @@ class Team(models.Model):
 
 
 class User(AbstractUser):
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    mobile = models.CharField(max_length=20, blank=True, null=True)
+    phone = models.CharField(max_length=30, blank=True, null=True)
+    mobile = models.CharField(max_length=30, blank=True, null=True)
     team = models.ForeignKey(Team, on_delete=models.PROTECT, default=1)
 
     def __str__(self):
