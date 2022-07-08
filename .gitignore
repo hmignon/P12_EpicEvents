@@ -9,6 +9,9 @@ env/
 htmlcov/
 .coverage
 
+# Django
+*.log
+
 # PyCharm
 .idea/
 

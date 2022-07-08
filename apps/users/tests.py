@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import User, MANAGEMENT, SALES, SUPPORT
+from .models import MANAGEMENT, SALES, SUPPORT, Team, User
 
 TEST_PASSWORD = 'test_password'
 LOGIN_URL = reverse('users:login')
@@ -11,6 +11,9 @@ UPDATE_PASSWORD_URL = reverse('users:update_password')
 
 class LoginTests(APITestCase):
     def setUp(self):
+        Team.objects.create(name=MANAGEMENT)
+        Team.objects.create(name=SALES)
+        Team.objects.create(name=SUPPORT)
         User.objects.create_user(username='test_user', password=TEST_PASSWORD, email='test_user@email.com')
 
     def test_login_valid_credentials(self):

@@ -3,8 +3,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('crm/', include('crm.urls')),
-    path('', include('users.urls')),
+    path('crm/', include('apps.crm.urls')),
+    path('', include('apps.users.urls')),
 ]
 
 admin.site.site_header = "EpicEvents Admin"

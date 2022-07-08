@@ -2,7 +2,7 @@ from django.core.management import call_command
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from users.models import User, MANAGEMENT, SALES, SUPPORT
+from apps.users.models import Team, User, MANAGEMENT, SALES, SUPPORT
 
 TEST_PASSWORD = 'test_password'
 LOGIN_URL = reverse('users:login')
@@ -15,26 +15,30 @@ class CustomAPITestCase(APITestCase):
         """Create test users with hashed passwords
         Load initial data from fixtures/data.json
         """
+        manager = Team.objects.create(name=MANAGEMENT)
+        sales = Team.objects.create(name=SALES)
+        support = Team.objects.create(name=SUPPORT)
+
         User.objects.create_user(
             id=1,
             username='test_manager',
             password=TEST_PASSWORD,
             email='test_manager@email.com',
-            team=MANAGEMENT
+            team=manager
         )
         User.objects.create_user(
             id=2,
             username='test_sales',
             password=TEST_PASSWORD,
             email='test_sales@email.com',
-            team=SALES
+            team=sales
         )
         User.objects.create_user(
             id=3,
             username='test_support',
             password=TEST_PASSWORD,
             email='test_support@email.com',
-            team=SUPPORT
+            team=support
         )
 
         call_command('loaddata', 'crm/fixtures/data.json', verbosity=0)

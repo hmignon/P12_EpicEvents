@@ -1,4 +1,4 @@
-from crm.models import Client, Contract, Event
+from apps.crm.models import Client, Contract, Event
 from .setup import CustomAPITestCase
 
 

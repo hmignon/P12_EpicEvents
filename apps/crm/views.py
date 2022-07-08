@@ -1,18 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, generics
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from users.models import SALES, SUPPORT
+from apps.users.models import SALES, SUPPORT
 from .models import Client, Contract, Event
-from .permissions import (
-    IsManager,
-    ClientPermissions,
-    ContractPermissions,
-    EventPermissions,
-)
+from .permissions import (ClientPermissions, ContractPermissions, EventPermissions, IsManager)
 from .serializers import (
     ClientSerializer,
     ContractSerializer,
@@ -28,9 +23,9 @@ class ClientList(generics.ListCreateAPIView):
     filterset_fields = ['status']
 
     def get_queryset(self):
-        if self.request.user.team == SUPPORT:
+        if self.request.user.team.name == SUPPORT:
             return Client.objects.filter(contract__event__support_contact=self.request.user).distinct()
-        elif self.request.user.team == SALES:
+        elif self.request.user.team.name == SALES:
             prospects = Client.objects.filter(status=False)
             own_clients = Client.objects.filter(sales_contact=self.request.user)
             return prospects | own_clients
@@ -76,9 +71,9 @@ class ContractList(generics.ListCreateAPIView):
     }
 
     def get_queryset(self):
-        if self.request.user.team == SUPPORT:
+        if self.request.user.team.name == SUPPORT:
             return Contract.objects.filter(event__support_contact=self.request.user)
-        elif self.request.user.team == SALES:
+        elif self.request.user.team.name == SALES:
             return Contract.objects.filter(sales_contact=self.request.user)
         return Contract.objects.all()
 
@@ -119,9 +114,9 @@ class EventList(generics.ListCreateAPIView):
     }
 
     def get_queryset(self):
-        if self.request.user.team == SUPPORT:
+        if self.request.user.team.name == SUPPORT:
             return Event.objects.filter(support_contact=self.request.user)
-        elif self.request.user.team == SALES:
+        elif self.request.user.team.name == SALES:
             return Event.objects.filter(contract__sales_contact=self.request.user)
         return Event.objects.all()
 

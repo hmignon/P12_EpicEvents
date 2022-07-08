@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from crm.models import Client
-from users.models import User
+from apps.crm.models import Client
+from apps.users.models import User
 from .setup import CustomAPITestCase
 
 
