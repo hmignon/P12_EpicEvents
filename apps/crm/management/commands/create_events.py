@@ -25,7 +25,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        self.stdout.write(f"Creating {number} events...")
         self.create_events(fake, number)
 
     def create_events(self, fake, number):
@@ -35,6 +34,7 @@ class Command(BaseCommand):
         if contracts.count() < number:
             self.stdout.write(f"Maximum events possible: {contracts.count()}")
             number = contracts.count()
+        self.stdout.write(f"Creating {number} events...")
 
         for _ in range(number):
             contract = choice(contracts)
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 location=f"{fake.street_address()}, {fake.city()}",
                 support_contact_id=support,
                 event_status=status,
-                attendees=randint(5, 1000),
+                attendees=randint(5, 500),
                 event_date=date,
                 notes=fake.paragraph(nb_sentences=randint(2, 6)),
             )

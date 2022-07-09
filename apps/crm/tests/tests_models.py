@@ -1,8 +1,8 @@
-from apps.common.tests.setup import CustomAPITestCase
+from apps.common.tests.setup import CustomCRMTestCase
 from apps.crm.models import Client, Contract, Event
 
 
-class ModelsTests(CustomAPITestCase):
+class ModelsTests(CustomCRMTestCase):
     def test_str_client(self):
         client = Client.objects.get(id=1)
         self.assertEqual(str(client), "Client #1 : Miller, James (CONVERTED)")
