@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from apps.common.tests.setup import CustomAPITestCase
 from apps.crm.models import Client, Contract
 from apps.users.models import User
-from .setup import CustomAPITestCase
 
 
 class ContractListTests(CustomAPITestCase):

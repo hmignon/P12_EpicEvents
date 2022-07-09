@@ -56,7 +56,7 @@ class Command(BaseCommand):
             Event.objects.create(
                 contract_id=contract,
                 name=name,
-                location=fake.address(),
+                location=f"{fake.street_address()}, {fake.city()}",
                 support_contact_id=support,
                 event_status=status,
                 attendees=randint(5, 1000),

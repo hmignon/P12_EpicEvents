@@ -9,7 +9,7 @@ LOGIN_URL = reverse('users:login')
 
 
 class CustomAPITestCase(APITestCase):
-    """Custom API test case for crm tests"""
+    """Custom API test case for tests"""
 
     def setUp(self):
         """Create test users with hashed passwords
@@ -37,7 +37,7 @@ class CustomAPITestCase(APITestCase):
             team_id=3
         )
 
-        call_command('loaddata', 'apps/crm/fixtures/data.json', verbosity=0)
+        call_command('loaddata', 'apps/common/fixtures/data.json', verbosity=0)
 
     def get_token_auth_client(self, user):
         """User token authentication

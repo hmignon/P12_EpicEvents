@@ -1,21 +1,55 @@
-# Projet 12 DA-Python OC (Hélène Mignon)
+<p align="center">
+  <img src="img/logo_light.png#gh-light-mode-only" alt="logo-light" />
+  <img src="img/logo_dark.png#gh-dark-mode-only" alt="logo-dark" />
+</p>
 
-***Livrable du Projet 12 du parcours D-A Python d'OpenClassrooms***
+<p align="center">
+  <a href="https://www.python.org">
+    <img src="https://img.shields.io/badge/Python-3.6+-3776AB?style=flat&logo=python&logoColor=white" alt="python-badge">
+  </a>
+  <a href="https://www.djangoproject.com">
+    <img src="https://img.shields.io/badge/Django-4.0+-092E20?style=flat&logo=django&logoColor=white" alt="django-badge">
+  </a>
+    <a href="https://www.django-rest-framework.org/">
+    <img src="https://img.shields.io/badge/DRF-3.13.1-a30000?style=flat" alt="drf-badge">
+  </a>
+<a href="https://documenter.getpostman.com/view/19098124/UVkvHCLn">
+    <img src="https://img.shields.io/badge/Postman-Docs-f06732?style=flat&logo=postman&logoColor=white" alt="postman-badge">
+  </a>
+</p>
 
-**API-EpicEvents** est une API RESTful conçue pour une entreprise de conseil et de gestion évènementielle.
+# About the project
 
-L'application permet aux utilisateurs de créer et mettre à jour une base de données clients, 
-de créer et d'assurer le suivi des contrats et des évènements.
+**OpenClassrooms Python Developer Project #12: Develop a Secure Back-End Architecture Using Django ORM**
 
-Une base de donnée sécurisée est mise en œuvre avec Django ORM et PostgreSQL.
+_Tested on Windows 10 - Python 3.9.5 - Django 4.0.6 - DRF 3.13.1_
 
-_Testé sous Windows 10 - Python 3.9.5 - Django 4.0.2 - DRF 3.13.1_
+### Objectives
+
+**API-EpicEvents** is a RESTful API designed for _Epic Events_, an events management company.
+
+Epic Events users can:
+- Create and update a client database
+- Create and manage contracts and organise related events
+
+The API is implemented with a secured database built with Django ORM and PostgreSQL.
 
 ## Documentation
 
 Pour plus de détails sur le fonctionnement de cette API, se référer à sa 
 [documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn) (Postman), 
 et le [diagramme entité-relation](img/erd_epicevents.png) du CRM.
+
+## Post-course optimisation
+
+This project has been optimised after the end of the OpenClassrooms course. 
+To view the previously delivered version, please check [this commit](https://github.com/hmignon/P12_mignon_helene/tree/0ad82d7f9b552faddc864a8154e37bf4377e5d4d).
+
+Improvements made to this project include:
+- Adding a Team model
+- Providing custom management commands to create dummy data
+- Optimising test coverage
+- General project refactoring
 
 ## Initialisation du projet
 
