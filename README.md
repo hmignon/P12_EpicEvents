@@ -5,7 +5,7 @@
 
 <p align="center">
   <a href="https://www.python.org">
-    <img src="https://img.shields.io/badge/Python-3.6+-3776AB?style=flat&logo=python&logoColor=white" alt="python-badge">
+    <img src="https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white" alt="python-badge">
   </a>
   <a href="https://www.djangoproject.com">
     <img src="https://img.shields.io/badge/Django-4.0+-092E20?style=flat&logo=django&logoColor=white" alt="django-badge">
