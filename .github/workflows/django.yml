@@ -33,10 +33,10 @@ jobs:
 
       - name: Run Tests
         env:
-          SECRET_KEY: temp_secret_key
-          DATABASE_NAME: database
-          DATABASE_USER: user
-          DATABASE_PASS: password
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
         run: |
           python manage.py test
 
