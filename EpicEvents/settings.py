@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django_filters',
 
     'apps.common',
-    'apps.crm',
+    'apps.clients',
+    'apps.contracts',
+    'apps.events',
     'apps.users',
 ]
 

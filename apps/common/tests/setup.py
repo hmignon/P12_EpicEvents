@@ -2,7 +2,7 @@ from django.core.management import call_command
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from apps.crm.models import Contract
+from apps.contracts.models import Contract
 from apps.users.models import User
 
 TEST_PASSWORD = 'test_password'
