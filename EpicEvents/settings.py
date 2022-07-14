@@ -28,6 +28,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Third-party apps
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'django_filters',
+    'jazzmin',
+
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,10 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'django_filters',
-
+    # Project apps
     'apps.common',
     'apps.clients',
     'apps.contracts',
@@ -154,6 +158,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Error logging
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -178,4 +184,30 @@ LOGGING = {
             'propagate': True,
         },
     },
+}
+
+# Jazzmin configuration
+
+JAZZMIN_SETTINGS = {
+    "site_title": "EpicEvents Admin",
+    "site_brand": "EpicEvents",
+    "site_logo": "common/img/logo_sq_light.png",
+    "welcome_sign": "Welcome to the EpicEvents Admin site",
+    "topmenu_links": [
+
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"app": "clients"},
+        {"app": "contracts"},
+        {"app": "events"},
+        {"app": "users"},
+    ],
+
+    "icons": {
+        "users.user": "fas fa-users",
+        "clients.client": "fas fa-address-book",
+        "contracts.contract": "fas fa-file-signature",
+        "events.event": "far fa-calendar",
+    },
+
+    "changeform_format": "single",
 }

@@ -55,6 +55,7 @@ Improvements made to this project include:
 - Adding a Team model
 - Providing custom management commands to create dummy data
 - Optimising test coverage
+- Improving the admin site interface with Jazzmin
 - General project refactoring
 
 ## Initialisation du projet
