@@ -3,6 +3,7 @@ certifi==2021.10.8
 coverage==6.4.1
 django-environ==0.9.0
 django-filter==22.1
+django-jazzmin==2.5.0
 Django==4.0.6
 djangorestframework-simplejwt==5.2.0
 djangorestframework==3.13.1
