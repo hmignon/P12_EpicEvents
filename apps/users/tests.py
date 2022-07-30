@@ -11,6 +11,8 @@ USER_COMMAND = "create_users"
 class UserCommandTests(CommandTestCase):
 
     def test_create_users_default(self):
+        """Create users command, default number: 15.
+        Check created data types and validity."""
         users_before = User.objects.all().count()
         out = self.call_command(USER_COMMAND)
         self.assertEqual(out, "Creating 15 user(s)...\n")
@@ -30,6 +32,7 @@ class UserCommandTests(CommandTestCase):
             self.assertIn(user.team_id, [1, 2, 3])
 
     def test_create_users_with_args(self):
+        """Create users command with number args."""
         users_before = User.objects.all().count()
         out = self.call_command(USER_COMMAND, "-n 12")
         self.assertEqual(out, "Creating 12 user(s)...\n")
@@ -45,6 +48,7 @@ class LoginTests(CustomCRMTestCase):
     login_url = reverse('users:login')
 
     def test_login_valid_credentials(self):
+        """Valid login returns JWT tokens."""
         user = User.objects.get(username='test_sales')
         data = {
             'username': user.username,
@@ -56,6 +60,7 @@ class LoginTests(CustomCRMTestCase):
         self.assertIn('refresh', response.data)
 
     def test_login_unknown_username(self):
+        """Invalid username returns error message."""
         data = {
             'username': 'random_username',
             'password': TEST_PASSWORD,
@@ -65,6 +70,7 @@ class LoginTests(CustomCRMTestCase):
         self.assertEqual(response.json(), {"detail": 'No active account found with the given credentials'})
 
     def test_login_wrong_password(self):
+        """Invalid password returns error message."""
         user = User.objects.get(username='test_sales')
         data = {
             'username': user.username,
@@ -79,6 +85,7 @@ class UpdatePasswordTests(CustomCRMTestCase):
     update_password_url = reverse('users:update_password')
 
     def test_change_password_ok(self):
+        """Valid password update returns 200 status code."""
         user = User.objects.get(username='test_sales')
         client = self.get_token_auth_client(user)
         data = {
@@ -90,6 +97,7 @@ class UpdatePasswordTests(CustomCRMTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_invalid_old_password(self):
+        """Invalid old password returns error message."""
         user = User.objects.get(username='test_sales')
         client = self.get_token_auth_client(user)
         data = {
@@ -102,6 +110,7 @@ class UpdatePasswordTests(CustomCRMTestCase):
         self.assertEqual(response.json(), {'old_password': {'old_password': 'Old password is not correct.'}})
 
     def test_non_identical_new_passwords(self):
+        """Non identical passwords update returns error message."""
         user = User.objects.get(username='test_sales')
         client = self.get_token_auth_client(user)
         data = {
@@ -148,6 +157,7 @@ class UserModelTests(CustomCRMTestCase):
         self.assertEqual(str(User.objects.get(id=3)), "test_support (SUPPORT)")
 
     def test_user_team_if_staff_or_superuser(self):
+        """Superuser and staff status for managers only."""
         manager = User.objects.get(id=1)
         self.assertTrue(manager.is_staff)
         self.assertTrue(manager.is_superuser)

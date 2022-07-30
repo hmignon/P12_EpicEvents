@@ -20,6 +20,8 @@ class ContractCommandTests(CommandTestCase):
         call_command("create_clients", "--verbosity=0")
 
     def test_create_contracts_default(self):
+        """Create contracts command, default number: 20.
+        Check created data types and validity."""
         self.create_sample_data()
         clients = Client.objects.filter(status=True).count()
         contracts_before = Contract.objects.all().count()
@@ -44,6 +46,7 @@ class ContractCommandTests(CommandTestCase):
             self.assertEqual(type(contract.payment_due), datetime.date)
 
     def test_create_contracts_with_args(self):
+        """Create contracts command with number args."""
         self.create_sample_data()
         contracts_before = Contract.objects.all().count()
         out = self.call_command(CONTRACT_COMMAND, "-n 12")

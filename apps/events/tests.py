@@ -21,6 +21,8 @@ class EventCommandTests(CommandTestCase):
         call_command("create_contracts", "--verbosity=0")
 
     def test_create_events_default(self):
+        """Create events command, default number: 10.
+        Check created data types and validity."""
         self.create_sample_data()
         contracts = Contract.objects.filter(status=True).count()
         events_before = Event.objects.all().count()
@@ -48,6 +50,7 @@ class EventCommandTests(CommandTestCase):
             self.assertEqual(type(event.notes), str)
 
     def test_create_events_with_args(self):
+        """Create events command with number args."""
         self.create_sample_data()
         events_before = Event.objects.all().count()
         out = self.call_command(EVENT_COMMAND, "-n 2")

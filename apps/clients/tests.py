@@ -16,6 +16,8 @@ class ClientCommandTests(CommandTestCase):
         call_command("create_users", "--verbosity=0")
 
     def test_create_clients_default(self):
+        """Create clients command, default number: 50.
+        Check created data types and validity."""
         self.create_sample_data()
         clients_before = Client.objects.all().count()
         out = self.call_command(CLIENT_COMMAND)
@@ -39,6 +41,7 @@ class ClientCommandTests(CommandTestCase):
                 self.assertIsNone(client.sales_contact)
 
     def test_create_clients_with_args(self):
+        """Create clients command with number args."""
         self.create_sample_data()
         clients_before = Client.objects.all().count()
         out = self.call_command(CLIENT_COMMAND, "-n 12")
