@@ -1,13 +1,11 @@
-from django.core import management
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, call_command
 
 
 class Command(BaseCommand):
-
     help = "Create dummy data."
 
     def handle(self, *args, **options):
-        management.call_command('create_users', number=15)
-        management.call_command('create_clients', number=50)
-        management.call_command('create_contracts', number=20)
-        management.call_command('create_events', number=10)
+        call_command('create_users', number=15, verbosity=options["verbosity"])
+        call_command('create_clients', number=50, verbosity=options["verbosity"])
+        call_command('create_contracts', number=20, verbosity=options["verbosity"])
+        call_command('create_events', number=10, verbosity=options["verbosity"])

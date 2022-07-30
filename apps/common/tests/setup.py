@@ -1,4 +1,7 @@
+from io import StringIO
+
 from django.core.management import call_command
+from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -7,6 +10,24 @@ from apps.users.models import User
 
 TEST_PASSWORD = 'test_password'
 LOGIN_URL = reverse('users:login')
+
+
+class CommandTestCase(TestCase):
+    """
+    Custom test case for testing management commands
+    """
+
+    @staticmethod
+    def call_command(command, *args, **kwargs):
+        out = StringIO()
+        call_command(
+            command,
+            *args,
+            stdout=out,
+            stderr=StringIO(),
+            **kwargs,
+        )
+        return out.getvalue()
 
 
 class CustomCRMTestCase(APITestCase):

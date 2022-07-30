@@ -1,23 +1,63 @@
-from django.test import TestCase
+import datetime
+
+from django.core.management import call_command
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from apps.common.tests.setup import CustomCRMTestCase
+from apps.common.tests.setup import CommandTestCase, CustomCRMTestCase
+from apps.contracts.models import Contract
 from apps.users.models import User
 from .models import Event
 
-
-class EventModelTests(CustomCRMTestCase):
-
-    def test_str_event(self):
-        event = Event.objects.get(id=1)
-        self.assertEqual(str(event), "Event #1 : Miller, James | Date : 2022-03-06 (UPCOMING)")
-        event = Event.objects.get(id=3)
-        self.assertEqual(str(event), "Event #3 : Dupont, Jean | Date : 2022-11-17 (COMPLETED)")
+EVENT_COMMAND = "create_events"
 
 
-class EventCommandTests(TestCase):
-    pass
+class EventCommandTests(CommandTestCase):
+
+    @staticmethod
+    def create_sample_data():
+        call_command("create_users", "--verbosity=0")
+        call_command("create_clients", "--verbosity=0")
+        call_command("create_contracts", "--verbosity=0")
+
+    def test_create_events_default(self):
+        self.create_sample_data()
+        contracts = Contract.objects.filter(status=True).count()
+        events_before = Event.objects.all().count()
+        out = self.call_command(EVENT_COMMAND)
+        if contracts < 10:
+            self.assertEqual(out, f"Maximum events possible: {contracts}\nCreating {contracts} event(s)...\n")
+            self.assertEqual(Event.objects.all().count(), events_before + contracts)
+        else:
+            self.assertEqual(out, "Creating 10 event(s)...\n")
+            self.assertEqual(Event.objects.all().count(), events_before + 10)
+            contracts = 20
+
+        # test created data
+        events = Event.objects.all().order_by('-id')[:contracts]
+        for event in events:
+            self.assertEqual(type(event.contract_id), int)
+            self.assertEqual(type(event.name), str)
+            self.assertEqual(type(event.location), str)
+            if event.support_contact:
+                self.assertEqual(type(event.support_contact_id), int)
+                self.assertEqual(event.support_contact.team_id, 3)
+            self.assertEqual(type(event.event_status), bool)
+            self.assertEqual(type(event.attendees), int)
+            self.assertEqual(type(event.event_date), datetime.datetime)
+            self.assertEqual(type(event.notes), str)
+
+    def test_create_events_with_args(self):
+        self.create_sample_data()
+        events_before = Event.objects.all().count()
+        out = self.call_command(EVENT_COMMAND, "-n 2")
+        self.assertEqual(out, "Creating 2 event(s)...\n")
+        self.assertEqual(Event.objects.all().count(), events_before + 2)
+
+        events_before = Event.objects.all().count()
+        out = self.call_command(EVENT_COMMAND, "--number=1")
+        self.assertEqual(out, "Creating 1 event(s)...\n")
+        self.assertEqual(Event.objects.all().count(), events_before + 1)
 
 
 class EventListTests(CustomCRMTestCase):
@@ -205,3 +245,12 @@ class EventDetailTests(CustomCRMTestCase):
         response = test_client.put('/crm/events/1/', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {"detail": "Cannot change the related contract."})
+
+
+class EventModelTests(CustomCRMTestCase):
+
+    def test_str_event(self):
+        event = Event.objects.get(id=1)
+        self.assertEqual(str(event), "Event #1 : Miller, James | Date : 2022-03-06 (UPCOMING)")
+        event = Event.objects.get(id=3)
+        self.assertEqual(str(event), "Event #3 : Dupont, Jean | Date : 2022-11-17 (COMPLETED)")

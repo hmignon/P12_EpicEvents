@@ -2,8 +2,43 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 
+from apps.common.tests.setup import CommandTestCase, CustomCRMTestCase, TEST_PASSWORD
 from .models import Team, User
-from apps.common.tests.setup import CustomCRMTestCase, TEST_PASSWORD
+
+USER_COMMAND = "create_users"
+
+
+class UserCommandTests(CommandTestCase):
+
+    def test_create_users_default(self):
+        users_before = User.objects.all().count()
+        out = self.call_command(USER_COMMAND)
+        self.assertEqual(out, "Creating 15 user(s)...\n")
+        self.assertEqual(User.objects.all().count(), users_before + 15)
+
+        # test created data
+        users = User.objects.all().order_by('-id')[:15]
+        for user in users:
+            self.assertEqual(type(user.first_name), str)
+            self.assertEqual(type(user.last_name), str)
+            self.assertEqual(type(user.username), str)
+            self.assertEqual(type(user.password), str)
+            self.assertEqual(type(user.email), str)
+            self.assertEqual(type(user.phone), str)
+            self.assertEqual(type(user.mobile), str)
+            self.assertEqual(type(user.team_id), int)
+            self.assertIn(user.team_id, [1, 2, 3])
+
+    def test_create_users_with_args(self):
+        users_before = User.objects.all().count()
+        out = self.call_command(USER_COMMAND, "-n 12")
+        self.assertEqual(out, "Creating 12 user(s)...\n")
+        self.assertEqual(User.objects.all().count(), users_before + 12)
+
+        users_before = User.objects.all().count()
+        out = self.call_command(USER_COMMAND, "--number=8")
+        self.assertEqual(out, "Creating 8 user(s)...\n")
+        self.assertEqual(User.objects.all().count(), users_before + 8)
 
 
 class LoginTests(CustomCRMTestCase):

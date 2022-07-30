@@ -24,15 +24,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        self.stdout.write(f"Creating {number} contracts...")
-        self.create_contracts(fake, number)
+        clients = Client.objects.filter(status=True)
+        if clients.count() < number:
+            number = clients.count()
+            if options["verbosity"] != 0:
+                self.stdout.write(f"Maximum contracts possible: {clients.count()}")
+        if options["verbosity"] != 0:
+            self.stdout.write(f"Creating {number} contract(s)...")
+        self.create_contracts(fake, number, clients)
 
     @staticmethod
-    def create_contracts(fake, number):
-        clients = Client.objects.filter(status=True).values_list('pk', flat=True)
-
+    def create_contracts(fake, number, clients):
         for _ in range(number):
-            client = choice(clients)
+            client = choice(clients.values_list('pk', flat=True))
             Contract.objects.create(
                 client_id=client,
                 sales_contact=Client.objects.get(id=client).sales_contact,

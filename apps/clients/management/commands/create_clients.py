@@ -23,7 +23,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        self.stdout.write(f"Creating {number} clients...")
+        if options["verbosity"] != 0:
+            self.stdout.write(f"Creating {number} client(s)...")
         self.create_clients(fake, number)
 
     @staticmethod

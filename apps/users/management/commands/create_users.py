@@ -22,7 +22,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        self.stdout.write(f"Creating {number} users...")
+        if options["verbosity"] != 0:
+            self.stdout.write(f"Creating {number} user(s)...")
         self.create_users(fake, number)
 
     @staticmethod

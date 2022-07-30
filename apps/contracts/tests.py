@@ -1,24 +1,59 @@
-from django.test import TestCase
+import datetime
+
+from django.core.management import call_command
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from apps.clients.models import Client
-from apps.common.tests.setup import CustomCRMTestCase
+from apps.common.tests.setup import CommandTestCase, CustomCRMTestCase
 from apps.users.models import User
 from .models import Contract
 
-
-class ContractModelTests(CustomCRMTestCase):
-
-    def test_str_contract(self):
-        contract = Contract.objects.get(id=1)
-        self.assertEqual(str(contract), "Contract #1 : Miller, James (SIGNED)")
-        contract = Contract.objects.get(id=2)
-        self.assertEqual(str(contract), "Contract #2 : Dupont, Jean (NOT SIGNED)")
+CONTRACT_COMMAND = "create_contracts"
 
 
-class ContractCommandTests(TestCase):
-    pass
+class ContractCommandTests(CommandTestCase):
+
+    @staticmethod
+    def create_sample_data():
+        call_command("create_users", "--verbosity=0")
+        call_command("create_clients", "--verbosity=0")
+
+    def test_create_contracts_default(self):
+        self.create_sample_data()
+        clients = Client.objects.filter(status=True).count()
+        contracts_before = Contract.objects.all().count()
+        out = self.call_command(CONTRACT_COMMAND)
+        if clients < 20:
+            self.assertEqual(out, f"Maximum contracts possible: {clients}\nCreating {clients} contract(s)...\n")
+            self.assertEqual(Contract.objects.all().count(), contracts_before + clients)
+        else:
+            self.assertEqual(out, "Creating 20 contract(s)...\n")
+            self.assertEqual(Contract.objects.all().count(), contracts_before + 20)
+            clients = 20
+
+        # test created data
+        contracts = Contract.objects.all().order_by('-id')[:clients]
+        for contract in contracts:
+            self.assertEqual(type(contract.client_id), int)
+            self.assertEqual(type(contract.sales_contact_id), int)
+            self.assertEqual(contract.sales_contact_id, contract.client.sales_contact_id)
+            self.assertEqual(contract.sales_contact.team_id, 2)
+            self.assertEqual(type(contract.status), bool)
+            self.assertEqual(type(contract.amount), float)
+            self.assertEqual(type(contract.payment_due), datetime.date)
+
+    def test_create_contracts_with_args(self):
+        self.create_sample_data()
+        contracts_before = Contract.objects.all().count()
+        out = self.call_command(CONTRACT_COMMAND, "-n 12")
+        self.assertEqual(out, "Creating 12 contract(s)...\n")
+        self.assertEqual(Contract.objects.all().count(), contracts_before + 12)
+
+        contracts_before = Contract.objects.all().count()
+        out = self.call_command(CONTRACT_COMMAND, "--number=8")
+        self.assertEqual(out, "Creating 8 contract(s)...\n")
+        self.assertEqual(Contract.objects.all().count(), contracts_before + 8)
 
 
 class ContractListTests(CustomCRMTestCase):
@@ -182,3 +217,12 @@ class ContractDetailTests(CustomCRMTestCase):
         test_client = self.get_token_auth_client(user)
         response = test_client.put('/crm/contracts/2/', self.contract_update_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class ContractModelTests(CustomCRMTestCase):
+
+    def test_str_contract(self):
+        contract = Contract.objects.get(id=1)
+        self.assertEqual(str(contract), "Contract #1 : Miller, James (SIGNED)")
+        contract = Contract.objects.get(id=2)
+        self.assertEqual(str(contract), "Contract #2 : Dupont, Jean (NOT SIGNED)")

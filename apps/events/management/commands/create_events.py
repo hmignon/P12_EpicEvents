@@ -18,7 +18,7 @@ class Command(BaseCommand):
             '--number',
             '-n',
             dest='number',
-            default=20,
+            default=10,
             type=int,
             help="Specify the number of events to create.",
         )
@@ -26,16 +26,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        self.create_events(fake, number)
-
-    def create_events(self, fake, number):
-        support_contacts = User.objects.filter(team_id=3).values_list('pk', flat=True)
         contracts = Contract.objects.filter(status=True).values_list('pk', flat=True)
 
         if contracts.count() < number:
-            self.stdout.write(f"Maximum events possible: {contracts.count()}")
             number = contracts.count()
-        self.stdout.write(f"Creating {number} events...")
+            if options["verbosity"] != 0:
+                self.stdout.write(f"Maximum events possible: {contracts.count()}")
+        if options["verbosity"] != 0:
+            self.stdout.write(f"Creating {number} event(s)...")
+        self.create_events(fake, number, contracts)
+
+    @staticmethod
+    def create_events(fake, number, contracts):
+        support_contacts = User.objects.filter(team_id=3).values_list('pk', flat=True)
 
         for _ in range(number):
             contract = choice(contracts)

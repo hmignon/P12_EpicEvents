@@ -1,23 +1,54 @@
-from django.test import TestCase
+from django.core.management import call_command
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from apps.common.tests.setup import CustomCRMTestCase
+from apps.common.tests.setup import CommandTestCase, CustomCRMTestCase
 from apps.users.models import User
 from .models import Client
 
-
-class ClientModelTests(CustomCRMTestCase):
-
-    def test_str_client(self):
-        client = Client.objects.get(id=1)
-        self.assertEqual(str(client), "Client #1 : Miller, James (CONVERTED)")
-        client = Client.objects.get(id=3)
-        self.assertEqual(str(client), "Client #3 : Smith, John (PROSPECT)")
+CLIENT_COMMAND = "create_clients"
 
 
-class ClientCommandTests(TestCase):
-    pass
+class ClientCommandTests(CommandTestCase):
+
+    @staticmethod
+    def create_sample_data():
+        call_command("create_users", "--verbosity=0")
+
+    def test_create_clients_default(self):
+        self.create_sample_data()
+        clients_before = Client.objects.all().count()
+        out = self.call_command(CLIENT_COMMAND)
+        self.assertEqual(out, "Creating 50 client(s)...\n")
+        self.assertEqual(Client.objects.all().count(), clients_before + 50)
+
+        # test created data
+        clients = Client.objects.all().order_by('-id')[:50]
+        for client in clients:
+            self.assertEqual(type(client.first_name), str)
+            self.assertEqual(type(client.last_name), str)
+            self.assertEqual(type(client.company_name), str)
+            self.assertEqual(type(client.email), str)
+            self.assertEqual(type(client.phone), str)
+            self.assertEqual(type(client.mobile), str)
+            self.assertEqual(type(client.status), bool)
+            if client.status:
+                self.assertEqual(type(client.sales_contact_id), int)
+                self.assertEqual(client.sales_contact.team_id, 2)
+            else:
+                self.assertIsNone(client.sales_contact)
+
+    def test_create_clients_with_args(self):
+        self.create_sample_data()
+        clients_before = Client.objects.all().count()
+        out = self.call_command(CLIENT_COMMAND, "-n 12")
+        self.assertEqual(out, "Creating 12 client(s)...\n")
+        self.assertEqual(Client.objects.all().count(), clients_before + 12)
+
+        clients_before = Client.objects.all().count()
+        out = self.call_command(CLIENT_COMMAND, "--number=8")
+        self.assertEqual(out, "Creating 8 client(s)...\n")
+        self.assertEqual(Client.objects.all().count(), clients_before + 8)
 
 
 class ClientListTests(CustomCRMTestCase):
@@ -233,3 +264,12 @@ class ClientDetailTests(CustomCRMTestCase):
         test_client = self.get_token_auth_client(user)
         response = test_client.delete(reverse(self.client_detail_url, kwargs={'pk': 4}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class ClientModelTests(CustomCRMTestCase):
+
+    def test_str_client(self):
+        client = Client.objects.get(id=1)
+        self.assertEqual(str(client), "Client #1 : Miller, James (CONVERTED)")
+        client = Client.objects.get(id=3)
+        self.assertEqual(str(client), "Client #3 : Smith, John (PROSPECT)")
