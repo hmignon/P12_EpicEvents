@@ -8,8 +8,8 @@ class Event(models.Model):
     contract = models.OneToOneField(
         to=Contract,
         on_delete=models.CASCADE,
-        limit_choices_to={'status': True},
-        related_name='event'
+        limit_choices_to={"status": True},
+        related_name="event",
     )
     name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=200, null=True, blank=True)
@@ -18,8 +18,9 @@ class Event(models.Model):
     support_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
-        limit_choices_to={'team_id': 3}
+        null=True,
+        blank=True,
+        limit_choices_to={"team_id": 3},
     )
     event_status = models.BooleanField(default=False, verbose_name="Completed")
     attendees = models.PositiveIntegerField()
@@ -28,7 +29,7 @@ class Event(models.Model):
 
     def __str__(self):
         name = f"{self.contract.client.last_name}, {self.contract.client.first_name}"
-        date = self.event_date.strftime('%Y-%m-%d')
+        date = self.event_date.strftime("%Y-%m-%d")
         if self.event_status is False:
             stat = "UPCOMING"
         else:

@@ -14,8 +14,9 @@ class Client(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
-        limit_choices_to={'team_id': 2}
+        null=True,
+        blank=True,
+        limit_choices_to={"team_id": 2},
     )
     status = models.BooleanField(default=False, verbose_name="Converted")
 

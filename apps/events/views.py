@@ -17,13 +17,17 @@ class EventList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsManager | EventPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = [
-        '^contract__client__first_name', '^contract__client__last_name', '^contract__client__email',
-        '^contract__client__company_name', '^name', '^location'
+        "^contract__client__first_name",
+        "^contract__client__last_name",
+        "^contract__client__email",
+        "^contract__client__company_name",
+        "^name",
+        "^location",
     ]
     filterset_fields = {
-        'event_date': ['gte', 'lte'],
-        'attendees': ['gte', 'lte'],
-        'event_status': ['exact'],
+        "event_date": ["gte", "lte"],
+        "attendees": ["gte", "lte"],
+        "event_status": ["exact"],
     }
 
     def get_queryset(self):
@@ -42,7 +46,7 @@ class EventList(generics.ListCreateAPIView):
 
 class EventDetail(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
-    http_method_names = ['get', 'put', 'options']
+    http_method_names = ["get", "put", "options"]
     permission_classes = [IsAuthenticated, IsManager | EventPermissions]
     serializer_class = EventSerializer
 
@@ -50,8 +54,8 @@ class EventDetail(generics.RetrieveUpdateAPIView):
         event = self.get_object()
         serializer = EventSerializer(instance=event, data=request.data)
         if serializer.is_valid(raise_exception=True):
-            if serializer.validated_data['contract'] != event.contract:
+            if serializer.validated_data["contract"] != event.contract:
                 raise ValidationError({"detail": "Cannot change the related contract."})
-            serializer.validated_data['support_contact'] = event.support_contact
+            serializer.validated_data["support_contact"] = event.support_contact
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

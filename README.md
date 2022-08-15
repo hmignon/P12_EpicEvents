@@ -16,6 +16,9 @@
   <a href="https://documenter.getpostman.com/view/19098124/UVkvHCLn">
     <img src="https://img.shields.io/badge/Postman-Docs-f06732?style=flat&logo=postman&logoColor=white" alt="postman-badge">
   </a>
+  <a href="https://black.readthedocs.io/en/stable/index.html">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black-badge">
+  </a>
   <a href="https://github.com/hmignon/P12_mignon_helene/actions">
     <img src="https://img.shields.io/github/workflow/status/hmignon/P12_mignon_helene/Django%20CI?logo=github" alt="ci-workflow">
   </a>

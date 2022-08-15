@@ -8,14 +8,15 @@ class Contract(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
-        limit_choices_to={'team_id': 2}
+        null=True,
+        blank=True,
+        limit_choices_to={"team_id": 2},
     )
     client = models.ForeignKey(
         to=Client,
         on_delete=models.CASCADE,
-        limit_choices_to={'status': True},
-        related_name='contract'
+        limit_choices_to={"status": True},
+        related_name="contract",
     )
     status = models.BooleanField(default=False, verbose_name="Signed")
     date_created = models.DateTimeField(auto_now_add=True)

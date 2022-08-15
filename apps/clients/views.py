@@ -16,12 +16,14 @@ class ClientList(generics.ListCreateAPIView):
     serializer_class = ClientSerializer
     permission_classes = [IsAuthenticated, IsManager | ClientPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['^first_name', '^last_name', '^email', '^company_name']
-    filterset_fields = ['status']
+    search_fields = ["^first_name", "^last_name", "^email", "^company_name"]
+    filterset_fields = ["status"]
 
     def get_queryset(self):
         if self.request.user.team.name == SUPPORT:
-            return Client.objects.filter(contract__event__support_contact=self.request.user).distinct()
+            return Client.objects.filter(
+                contract__event__support_contact=self.request.user
+            ).distinct()
         elif self.request.user.team.name == SALES:
             prospects = Client.objects.filter(status=False)
             own_clients = Client.objects.filter(sales_contact=self.request.user)
@@ -31,15 +33,15 @@ class ClientList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ClientSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            if serializer.validated_data['status'] is True:
-                serializer.validated_data['sales_contact'] = request.user
+            if serializer.validated_data["status"] is True:
+                serializer.validated_data["sales_contact"] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
-    http_method_names = ['get', 'put', 'delete', 'options']
+    http_method_names = ["get", "put", "delete", "options"]
     permission_classes = [IsAuthenticated, IsManager | ClientPermissions]
     serializer_class = ClientSerializer
 
@@ -47,9 +49,11 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
         client = self.get_object()
         serializer = ClientSerializer(data=request.data, instance=client)
         if serializer.is_valid(raise_exception=True):
-            if client.status is True and serializer.validated_data['status'] is False:
-                raise ValidationError({"detail": "Cannot change status of converted client."})
-            elif serializer.validated_data['status'] is True:
-                serializer.validated_data['sales_contact'] = request.user
+            if client.status is True and serializer.validated_data["status"] is False:
+                raise ValidationError(
+                    {"detail": "Cannot change status of converted client."}
+                )
+            elif serializer.validated_data["status"] is True:
+                serializer.validated_data["sales_contact"] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

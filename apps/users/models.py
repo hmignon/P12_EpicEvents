@@ -2,9 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from rest_framework.exceptions import PermissionDenied
 
-MANAGEMENT = 'MANAGEMENT'
-SALES = 'SALES'
-SUPPORT = 'SUPPORT'
+MANAGEMENT = "MANAGEMENT"
+SALES = "SALES"
+SUPPORT = "SUPPORT"
 
 TEAM_LIMIT = 3
 
@@ -16,12 +16,14 @@ class Team(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        """ Prevent from creating new teams or editing existing teams. """
+        """Prevent from creating new teams or editing existing teams."""
         if Team.objects.all().count() <= TEAM_LIMIT or self.pk is not None:
-            raise PermissionDenied(detail="You are not permitted to create or edit teams.")
+            raise PermissionDenied(
+                detail="You are not permitted to create or edit teams."
+            )
 
     def delete(self, using=None, keep_parents=False):
-        """ Prevent from deleting teams. """
+        """Prevent from deleting teams."""
         raise PermissionDenied(detail="You are not permitted to delete teams.")
 
 

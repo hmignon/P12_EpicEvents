@@ -11,21 +11,46 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('clients', '0001_initial'),
+        ("clients", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Contract',
+            name="Contract",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.BooleanField(default=False, verbose_name='Signed')),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True)),
-                ('amount', models.FloatField()),
-                ('payment_due', models.DateField()),
-                ('client', models.ForeignKey(limit_choices_to={'status': True}, on_delete=django.db.models.deletion.CASCADE, related_name='contract', to='clients.client')),
-                ('sales_contact', models.ForeignKey(blank=True, limit_choices_to={'team_id': 2}, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("status", models.BooleanField(default=False, verbose_name="Signed")),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                ("date_updated", models.DateTimeField(auto_now=True)),
+                ("amount", models.FloatField()),
+                ("payment_due", models.DateField()),
+                (
+                    "client",
+                    models.ForeignKey(
+                        limit_choices_to={"status": True},
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="contract",
+                        to="clients.client",
+                    ),
+                ),
+                (
+                    "sales_contact",
+                    models.ForeignKey(
+                        blank=True,
+                        limit_choices_to={"team_id": 2},
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

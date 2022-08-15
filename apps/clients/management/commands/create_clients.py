@@ -12,9 +12,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--number',
-            '-n',
-            dest='number',
+            "--number",
+            "-n",
+            dest="number",
             default=50,
             type=int,
             help="Specify the number of clients to create.",
@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_clients(fake, number):
-        sales = User.objects.filter(team_id=2).values_list('pk', flat=True)
+        sales = User.objects.filter(team_id=2).values_list("pk", flat=True)
         for _ in range(number):
             status = fake.pybool()
             if status:

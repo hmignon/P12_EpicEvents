@@ -15,9 +15,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--number',
-            '-n',
-            dest='number',
+            "--number",
+            "-n",
+            dest="number",
             default=10,
             type=int,
             help="Specify the number of events to create.",
@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         number = options["number"]
-        contracts = Contract.objects.filter(status=True).values_list('pk', flat=True)
+        contracts = Contract.objects.filter(status=True).values_list("pk", flat=True)
 
         if contracts.count() < number:
             number = contracts.count()
@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_events(fake, number, contracts):
-        support_contacts = User.objects.filter(team_id=3).values_list('pk', flat=True)
+        support_contacts = User.objects.filter(team_id=3).values_list("pk", flat=True)
 
         for _ in range(number):
             contract = choice(contracts)
@@ -55,7 +55,11 @@ class Command(BaseCommand):
                 tzinfo=pytz.UTC,
             )
             status = True if date < datetime.now(tz=pytz.UTC) else False
-            support = choice(support_contacts) if choice([0, 1]) == 0 or status is True else None
+            support = (
+                choice(support_contacts)
+                if choice([0, 1]) == 0 or status is True
+                else None
+            )
 
             Event.objects.create(
                 contract_id=contract,

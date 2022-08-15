@@ -15,12 +15,17 @@ class ContractList(generics.ListCreateAPIView):
     serializer_class = ContractSerializer
     permission_classes = [IsAuthenticated, IsManager | ContractPermissions]
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['^client__first_name', '^client__last_name', '^client__email', '^client__company_name']
+    search_fields = [
+        "^client__first_name",
+        "^client__last_name",
+        "^client__email",
+        "^client__company_name",
+    ]
     filterset_fields = {
-        'date_created': ['gte', 'lte'],
-        'payment_due': ['gte', 'lte'],
-        'amount': ['gte', 'lte'],
-        'status': ['exact'],
+        "date_created": ["gte", "lte"],
+        "payment_due": ["gte", "lte"],
+        "amount": ["gte", "lte"],
+        "status": ["exact"],
     }
 
     def get_queryset(self):
@@ -33,20 +38,20 @@ class ContractList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ContractSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.validated_data['sales_contact'] = request.user
+            serializer.validated_data["sales_contact"] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ContractDetail(generics.RetrieveUpdateAPIView):
     queryset = Contract.objects.all()
-    http_method_names = ['get', 'put', 'options']
+    http_method_names = ["get", "put", "options"]
     permission_classes = [IsAuthenticated, IsManager | ContractPermissions]
     serializer_class = ContractSerializer
 
     def update(self, request, *args, **kwargs):
         serializer = ContractSerializer(data=request.data, instance=self.get_object())
         if serializer.is_valid(raise_exception=True):
-            serializer.validated_data['sales_contact'] = request.user
+            serializer.validated_data["sales_contact"] = request.user
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

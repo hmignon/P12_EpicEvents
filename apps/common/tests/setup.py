@@ -8,8 +8,8 @@ from rest_framework.test import APITestCase
 from apps.contracts.models import Contract
 from apps.users.models import User
 
-TEST_PASSWORD = 'test_password'
-LOGIN_URL = reverse('users:login')
+TEST_PASSWORD = "test_password"
+LOGIN_URL = reverse("users:login")
 
 
 class CommandTestCase(TestCase):
@@ -43,27 +43,27 @@ class CustomCRMTestCase(APITestCase):
         """
         User.objects.create_user(
             id=1,
-            username='test_manager',
+            username="test_manager",
             password=TEST_PASSWORD,
-            email='test_manager@email.com',
-            team_id=1
+            email="test_manager@email.com",
+            team_id=1,
         )
         User.objects.create_user(
             id=2,
-            username='test_sales',
+            username="test_sales",
             password=TEST_PASSWORD,
-            email='test_sales@email.com',
-            team_id=2
+            email="test_sales@email.com",
+            team_id=2,
         )
         User.objects.create_user(
             id=3,
-            username='test_support',
+            username="test_support",
             password=TEST_PASSWORD,
-            email='test_support@email.com',
-            team_id=3
+            email="test_support@email.com",
+            team_id=3,
         )
 
-        call_command('loaddata', 'apps/common/fixtures/data.json', verbosity=0)
+        call_command("loaddata", "apps/common/fixtures/data.json", verbosity=0)
 
     def get_token_auth_client(self, user):
         """
@@ -71,12 +71,12 @@ class CustomCRMTestCase(APITestCase):
         Returns APIClient with JWT authorization for current user.
         """
         data = {
-            'username': user.username,
-            'password': TEST_PASSWORD,
+            "username": user.username,
+            "password": TEST_PASSWORD,
         }
-        response = self.client.post(LOGIN_URL, data, format='json')
-        token = response.data['access']
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        response = self.client.post(LOGIN_URL, data, format="json")
+        token = response.data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
 
         return self.client
 
@@ -93,5 +93,7 @@ class CustomCRMTestCase(APITestCase):
 
     @staticmethod
     def create_contract():
-        contract = Contract.objects.create(client_id=1, amount=123.45, payment_due='2022-06-09', status=True)
+        contract = Contract.objects.create(
+            client_id=1, amount=123.45, payment_due="2022-06-09", status=True
+        )
         return contract

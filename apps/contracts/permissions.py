@@ -6,9 +6,9 @@ from .models import Contract
 
 
 class ContractPermissions(permissions.BasePermission):
-    """ Sales team : can CREATE new contracts
-                     can VIEW and UPDATE contracts of their own clients if not signed
-        Support team : can VIEW contracts of their own clients
+    """Sales team : can CREATE new contracts
+                 can VIEW and UPDATE contracts of their own clients if not signed
+    Support team : can VIEW contracts of their own clients
     """
 
     def has_permission(self, request, view):
@@ -19,8 +19,10 @@ class ContractPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             if request.user.team.name == SUPPORT:
-                return obj in Contract.objects.filter(event__support_contact=request.user)
+                return obj in Contract.objects.filter(
+                    event__support_contact=request.user
+                )
             return request.user == obj.sales_contact
-        elif request.method == 'PUT' and obj.status is True:
+        elif request.method == "PUT" and obj.status is True:
             raise PermissionDenied("Cannot update a signed contract.")
         return request.user == obj.sales_contact and obj.status is False

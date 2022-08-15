@@ -11,9 +11,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--number',
-            '-n',
-            dest='number',
+            "--number",
+            "-n",
+            dest="number",
             default=15,
             type=int,
             help="Specify the number of users to create.",

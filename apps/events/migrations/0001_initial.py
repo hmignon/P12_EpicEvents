@@ -10,25 +10,53 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contracts', '0001_initial'),
+        ("contracts", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Event',
+            name="Event",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=100, null=True)),
-                ('location', models.CharField(blank=True, max_length=200, null=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True)),
-                ('event_status', models.BooleanField(default=False, verbose_name='Completed')),
-                ('attendees', models.PositiveIntegerField()),
-                ('event_date', models.DateTimeField()),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('contract', models.OneToOneField(limit_choices_to={'status': True}, on_delete=django.db.models.deletion.CASCADE, related_name='event', to='contracts.contract')),
-                ('support_contact', models.ForeignKey(blank=True, limit_choices_to={'team_id': 3}, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=100, null=True)),
+                ("location", models.CharField(blank=True, max_length=200, null=True)),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                ("date_updated", models.DateTimeField(auto_now=True)),
+                (
+                    "event_status",
+                    models.BooleanField(default=False, verbose_name="Completed"),
+                ),
+                ("attendees", models.PositiveIntegerField()),
+                ("event_date", models.DateTimeField()),
+                ("notes", models.TextField(blank=True, null=True)),
+                (
+                    "contract",
+                    models.OneToOneField(
+                        limit_choices_to={"status": True},
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="event",
+                        to="contracts.contract",
+                    ),
+                ),
+                (
+                    "support_contact",
+                    models.ForeignKey(
+                        blank=True,
+                        limit_choices_to={"team_id": 3},
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

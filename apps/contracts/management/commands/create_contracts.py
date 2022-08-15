@@ -13,9 +13,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--number',
-            '-n',
-            dest='number',
+            "--number",
+            "-n",
+            dest="number",
             default=20,
             type=int,
             help="Specify the number of contracts to create.",
@@ -36,14 +36,15 @@ class Command(BaseCommand):
     @staticmethod
     def create_contracts(fake, number, clients):
         for _ in range(number):
-            client = choice(clients.values_list('pk', flat=True))
+            client = choice(clients.values_list("pk", flat=True))
             Contract.objects.create(
                 client_id=client,
                 sales_contact=Client.objects.get(id=client).sales_contact,
                 status=fake.boolean(chance_of_getting_true=70),
-                amount=fake.pyfloat(right_digits=2, positive=True, min_value=100, max_value=99999),
+                amount=fake.pyfloat(
+                    right_digits=2, positive=True, min_value=100, max_value=99999
+                ),
                 payment_due=fake.date_between_dates(
-                    date_start=datetime(2022, 1, 1),
-                    date_end=datetime(2023, 12, 31)
-                ).strftime('%Y-%m-%d'),
+                    date_start=datetime(2022, 1, 1), date_end=datetime(2023, 12, 31)
+                ).strftime("%Y-%m-%d"),
             )
