@@ -162,9 +162,10 @@ Run tests locally with ```python manage.py test```.
 
 Check test coverage with ```coverage run --source='.' manage.py test``` and ```coverage report```.
 
+**Latest coverage report:**
+
 <p align="center">
     <img src="img/coverage_report.png" alt="latest coverage report" />
-    <em>Latest coverage report</em>
 </p>
 
 All app errors are logged in to ```errors.log```.
