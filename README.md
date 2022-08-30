@@ -30,7 +30,7 @@
 
 _Tested on Windows 10 - Python 3.9.5 - Django 4.1 - DRF 3.13.1_
 
-### Objectives
+## Objectives
 
 **API-EpicEvents** is a Customer Relationship Management (*CRM*) API designed for _Epic Events_, 
 an events management company.
