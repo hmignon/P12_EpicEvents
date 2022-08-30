@@ -28,30 +28,30 @@
 
 **OpenClassrooms Python Developer Project #12: Develop a Secure Back-End Architecture Using Django ORM**
 
-_Tested on Windows 10 - Python 3.9.5 - Django 4.0.6 - DRF 3.13.1_
+_Tested on Windows 10 - Python 3.9.5 - Django 4.1 - DRF 3.13.1_
 
 ### Objectives
 
-**API-EpicEvents** is a RESTful API designed for _Epic Events_, an events management company.
+**API-EpicEvents** is a Customer Relationship Management (*CRM*) API designed for _Epic Events_, 
+an events management company.
 
 Epic Events users can:
 
 - Create and update a client database
 - Create and manage contracts and organise related events
 
-The API is implemented with a secured database built with Django ORM and PostgreSQL.
+The RESTful API is implemented with a secured database built with Django ORM and PostgreSQL.
 
-## Documentation
+### :orange_book: View [Postman documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn)
 
-Pour plus de détails sur le fonctionnement de cette API, se référer à sa
-[documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn) (Postman),
-et le [diagramme entité-relation](img/erd_epicevents.png) du CRM.
+Note: Postman docs are currently only available in French ![fr-flag](https://flagcdn.com/16x12/fr.png), 
+English ![uk-flag](https://flagcdn.com/16x12/gb.png) version coming soon.
 
 ## Post-course optimisation
 
 This project has been optimised after the end of the OpenClassrooms course.
-To view the previously delivered version, please
-check [this commit](https://github.com/hmignon/P12_mignon_helene/tree/0ad82d7f9b552faddc864a8154e37bf4377e5d4d).
+To view the previously delivered version, please check 
+[this commit](https://github.com/hmignon/P12_mignon_helene/tree/0ad82d7f9b552faddc864a8154e37bf4377e5d4d).
 
 Improvements made to this project include:
 
@@ -61,11 +61,11 @@ Improvements made to this project include:
 - Improving the admin site interface with Jazzmin
 - General project refactoring
 
-## Initialisation du projet
+# Local development
 
-### Récupération du projet et installation des dépendances
+## Clone repository and install dependencies
 
-#### Windows
+### Windows
 
 ```
 git clone https://github.com/hmignon/P12_mignon_helene.git
@@ -77,7 +77,7 @@ env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-#### MacOS et Linux
+### MacOS and Linux
 
 ```
 git clone https://github.com/hmignon/P12_mignon_helene.git
@@ -89,84 +89,82 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### Créer la base de données
+## Create PostgreSQL database
 
-Installer [PostgreSQL](https://www.postgresql.org/download/)
-Se référer à la [documentation](https://www.postgresql.org) pour le lancement du serveur.
+Install [PostgreSQL](https://www.postgresql.org/download/).
+Follow the [documentation](https://www.postgresql.org) to run the server.
 
-Créer la base de données avec SQL shell (psql) : ```CREATE DATABASE epic_events;```
+Create a new PostgreSQL database with SQL shell (psql) : ```CREATE DATABASE your_db_name;```
 
-### Variables d'environnement
+## Environment variables : .env file
 
-Pour générer un fichier .env, lancer le script ```python create_dot_env.py```.
-Entrer le nom d'utilisateur et le mot de passe de la base de données précédemment créée.
+To generate a .env file, run ```python create_dot_env.py``` and input the info required.
 
-Une clé secrète Django sera automatiquement générée.
+Example of a generated .env file:
 
-### Migration de la base de données
+    SECRET_KEY=j%yuc7l_wwz5t8d=g)zxh6ol@$7*lwx6n0p)(k$dewlr0hf2u-
+    DATABASE_NAME=your_db_name
+    DATABASE_USER=your_db_user
+    DATABASE_PASS=your_db_password
 
-```
-python manage.py migrate
-```
+The Django secret key is randomly generated.
 
-### Créer un superuser
+## Migrate the database
 
-```
-python manage.py create superuser
-```
+To migrate, run ```python manage.py migrate```. The 3 user teams (manager, sales, support) are 
+automatically created; to learn more about user teams and their permissions, 
+check the [API docs](https://documenter.getpostman.com/view/19098124/UVkvHCLn).
 
-### Lancer le serveur Django
+## Create a superuser
 
-```
-python manage.py runserver
-```
+Run ```python manage.py create superuser```. Superusers are automatically added to the management team, 
+and have access to the admin site.
 
-## Utilisation
+## Create data
 
-Il est possible de naviguer dans l'API avec différents outils :
+Run the following commands prefixed with ```python manage.py``` to create some dummy data:
 
-- la plateforme [Postman](https://www.postman.com/) ;
-- l'outil de commandes [cURL](https://curl.se)
-
-Note : l'accès au CRM par les managers et admins est en lecture seule.
-La création, modification ou suppression d'éléments est possible via le site d'administration.
-
-### Administration
-
-Le site d'administration Django est accessible via http://127.0.0.1:8000/admin/.
-Cet accès est possible pour tous les utilisateurs de l'équipe de gestion (management) et les superusers.
-
-Ci-dessous, quelques exemples de l'interface du site d'administration ;
-
-- **Liste des utilisateurs :**
-  ![Admin users](img/admin_users.png)
+| Command                | Description                                                                                                                                                                                                                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```create_data```      | **Create a set of all objects** (15 users, 50 clients, 20 contracts, 10 events). No extra args.                                                                                                                                                                                         |
+| ```create_users```     | **Create a set of users.** Args: ```-n``` *or* ```--number``` (default: 15).                                                                                                                                                                                                            |
+| ```create_clients```   | **Create a set of clients.** Args: ```-n``` *or* ```--number``` (default: 50).                                                                                                                                                                                                          |
+| ```create_contracts``` | **Create a set of contracts.** Args: ```-n``` *or* ```--number``` (default: 20).                                                                                                                                                                                                        |
+| ```create_events```    | **Create a set of clients.** Args: ```-n``` *or* ```--number``` (default: 10). <br/>***Note:*** *Events are exclusively related to one signed contract (one to one rel); the command will create as many events as possible if the amount provided is higher than available contracts.* |
 
 
-- **Liste des clients :**
-  ![Admin clients](img/admin_clients.png)
+# Usage
+
+Run the server with ```python manage.py runserver```. The CRM is browsable via :
+
+- [Postman](https://www.postman.com/);
+- [cURL](https://curl.se) commands
+
+Note : CRM access to managers and admins is read-only. Creating, updating and deleting elements is 
+available in the admin site.
+
+## Admin site
+
+<p align="center">
+    <img src="img/admin_site.gif" alt="Admin site interface" />
+    <em>EpicEvents Admin interface</em>
+</p>
+
+Tha admin site is available at http://127.0.0.1:8000/admin/. Admin site access is granted to managers 
+and superusers.
+
+For a better user experience, the admin interface is customized and *jazzed up* with [Jazzmin](https://django-jazzmin.readthedocs.io).
 
 
-- **Liste des contrats :**
-  ![Admin contracts](img/admin_contracts.png)
+## Testing, coverage and error logging
 
+Run tests locally with ```python manage.py test```.
 
-- **Liste des événements :**
-  ![Admin events](img/admin_events.png)
+Check test coverage with ```coverage run --source='.' manage.py test``` and ```coverage report```.
 
-### Logging
+<p align="center">
+    <img src="img/coverage_report.png" alt="latest coverage report" />
+    <em>Latest coverage report</em>
+</p>
 
-L'application consigne les erreurs et exceptions dans le fichier [errors.log](errors.log).
-
-### Tests
-
-Il est possible d'effectuer les tests via la commande ```python manage.py test```.
-
-- *Rapport de test le plus récent*
-
-![Rapport de test](img/test_report.png)
-
-Pour effectuer le test de couverture : ```coverage run --source='.' manage.py test``` puis ```coverage report```.
-
-- *Rapport de couverture le plus récent*
-
-![Rapport de test](img/coverage_report.png)
+All app errors are logged in to ```errors.log```.
