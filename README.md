@@ -42,7 +42,7 @@ Epic Events users can:
 
 The RESTful API is implemented with a secured database built with Django ORM and PostgreSQL.
 
-### :orange_book: View [Postman documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn)
+## [:orange_book: Postman documentation](https://documenter.getpostman.com/view/19098124/UVkvHCLn)
 
 Note: Postman docs are currently only available in French ![fr-flag](https://flagcdn.com/16x12/fr.png), 
 English ![uk-flag](https://flagcdn.com/16x12/gb.png) version coming soon.
