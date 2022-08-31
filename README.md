@@ -16,13 +16,38 @@
   <a href="https://documenter.getpostman.com/view/19098124/UVkvHCLn">
     <img src="https://img.shields.io/badge/Postman-Docs-f06732?style=flat&logo=postman&logoColor=white" alt="postman-badge">
   </a>
+</p>
+
+<p align="center">
   <a href="https://black.readthedocs.io/en/stable/index.html">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black-badge">
+  </a>
+    <a href="https://coverage.readthedocs.io/en/6.4.4/">
+    <img src="https://img.shields.io/badge/coverage-98%25-brightgreen" alt="coverage-badge">
   </a>
   <a href="https://github.com/hmignon/P12_mignon_helene/actions">
     <img src="https://img.shields.io/github/workflow/status/hmignon/P12_mignon_helene/Django%20CI?logo=github" alt="ci-workflow">
   </a>
 </p>
+
+## Contents
+
+- [About the project](#about-the-project)
+  - [Objectives](#objectives)
+  - [Postman documentation](#orange_book-postman-documentation)
+  - [Post-course optimisation](#post-course-optimisation)
+- [Local development](#local-development)
+  - [Clone repository and install dependencies](#clone-repository-and-install-dependencies)
+  - [Create PostgreSQL database](#create-postgresql-database)
+  - [Environment variables : .env file](#environment-variables--env-file)
+  - [Migrate the database](#migrate-the-database)
+  - [Create a superuser](#create-a-superuser)
+  - [Create data with custom management commands](#create-data)
+- [Usage](#usage)
+  - [Admin site](#admin-site)
+  - [Testing, coverage and error logging](#testing-coverage-and-error-logging)
+
+---
 
 # About the project
 
@@ -121,7 +146,7 @@ check the [API docs](https://documenter.getpostman.com/view/19098124/UVkvHCLn).
 Run ```python manage.py create superuser```. Superusers are automatically added to the management team, 
 and have access to the admin site.
 
-## Create data
+## Create data with custom management commands
 
 Run the following commands prefixed with ```python manage.py``` to create some dummy data:
 
@@ -136,7 +161,7 @@ Run the following commands prefixed with ```python manage.py``` to create some d
 
 # Usage
 
-Run the server with ```python manage.py runserver```. The CRM is browsable via :
+Run the server with ```python manage.py runserver```. The CRM is browsable via:
 
 - [Postman](https://www.postman.com/);
 - [cURL](https://curl.se) commands
