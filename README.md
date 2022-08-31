@@ -42,7 +42,7 @@
   - [Environment variables : .env file](#environment-variables--env-file)
   - [Migrate the database](#migrate-the-database)
   - [Create a superuser](#create-a-superuser)
-  - [Create data with custom management commands](#create-data)
+  - [Create data with custom management commands](#create-data-with-custom-management-commands)
 - [Usage](#usage)
   - [Admin site](#admin-site)
   - [Testing, coverage and error logging](#testing-coverage-and-error-logging)
