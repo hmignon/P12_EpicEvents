@@ -1,0 +1,253 @@
+[
+  {
+    "model": "users.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$YNDRuNIR2DtQaxlCmREEfr$Fu9bN5l1nNblsusqg4NZzLSGsECAQnSvLrIGx04MHy8=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "extra_sales",
+      "first_name": "Marc",
+      "last_name": "Masson",
+      "email": "masson@epicevents.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-03-02T16:38:48.312Z",
+      "phone": null,
+      "mobile": "0612345678",
+      "team": 2,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$UQPxSh4JVBnczVjOmPff0Z$wvpcVxrFMZOd/JIomfEMx5EFsRoJuszgtrrP0nTflD0=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "extra_support",
+      "first_name": "Thomas",
+      "last_name": "Martin",
+      "email": "martin@epicevents.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-03-02T16:41:49.946Z",
+      "phone": "0700000000",
+      "mobile": null,
+      "team": 3,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "clients.client",
+    "pk": 1,
+    "fields": {
+      "first_name": "James",
+      "last_name": "Miller",
+      "email": "email@email.com",
+      "phone": null,
+      "mobile": null,
+      "company_name": "Company Plus",
+      "date_created": "2022-02-26T14:58:51.702Z",
+      "date_updated": "2022-03-02T16:35:43.334Z",
+      "sales_contact": 2,
+      "status": true
+    }
+  },
+  {
+    "model": "clients.client",
+    "pk": 2,
+    "fields": {
+      "first_name": "Jean",
+      "last_name": "Dupont",
+      "email": "compta-dupont@email.com",
+      "phone": null,
+      "mobile": null,
+      "company_name": "Dupont Comptabilité",
+      "date_created": "2022-02-26T19:16:41.507Z",
+      "date_updated": "2022-03-02T16:36:17.609Z",
+      "sales_contact": 2,
+      "status": true
+    }
+  },
+  {
+    "model": "clients.client",
+    "pk": 3,
+    "fields": {
+      "first_name": "John",
+      "last_name": "Smith",
+      "email": "johnsmith@email.com",
+      "phone": null,
+      "mobile": null,
+      "company_name": "Company 3",
+      "date_created": "2022-02-28T11:04:16.562Z",
+      "date_updated": "2022-02-28T11:04:16.562Z",
+      "sales_contact": null,
+      "status": false
+    }
+  },
+  {
+    "model": "clients.client",
+    "pk": 4,
+    "fields": {
+      "first_name": "Michel",
+      "last_name": "Leblanc",
+      "email": "mleblanc@leblancbotanique.fr",
+      "phone": null,
+      "mobile": "0600000000",
+      "company_name": "Leblanc Botanique",
+      "date_created": "2022-02-28T13:38:09.389Z",
+      "date_updated": "2022-03-02T16:35:07.877Z",
+      "sales_contact": null,
+      "status": false
+    }
+  },
+  {
+    "model": "clients.client",
+    "pk": 5,
+    "fields": {
+      "first_name": "Extra",
+      "last_name": "Client",
+      "email": "mleblanc@leblancbotanique.fr",
+      "phone": null,
+      "mobile": "0600000000",
+      "company_name": "Extra",
+      "date_created": "2022-02-28T13:38:09.389Z",
+      "date_updated": "2022-03-02T16:35:07.877Z",
+      "sales_contact": 5,
+      "status": true
+    }
+  },
+  {
+    "model": "contracts.contract",
+    "pk": 1,
+    "fields": {
+      "sales_contact": 2,
+      "client": 1,
+      "status": true,
+      "date_created": "2022-02-26T14:59:15.338Z",
+      "date_updated": "2022-02-26T14:59:15.338Z",
+      "amount": 1000.0,
+      "payment_due": "2022-02-27"
+    }
+  },
+  {
+    "model": "contracts.contract",
+    "pk": 2,
+    "fields": {
+      "sales_contact": 2,
+      "client": 2,
+      "status": false,
+      "date_created": "2022-03-07T08:18:39.861Z",
+      "date_updated": "2022-03-07T13:33:49.866Z",
+      "amount": 1234.56,
+      "payment_due": "2022-04-13"
+    }
+  },
+  {
+    "model": "contracts.contract",
+    "pk": 3,
+    "fields": {
+      "sales_contact": 2,
+      "client": 1,
+      "status": true,
+      "date_created": "2022-03-07T10:46:05.762Z",
+      "date_updated": "2022-03-07T10:49:29.129Z",
+      "amount": 1000.5,
+      "payment_due": "2022-10-09"
+    }
+  },
+  {
+    "model": "contracts.contract",
+    "pk": 4,
+    "fields": {
+      "sales_contact": 2,
+      "client": 2,
+      "status": true,
+      "date_created": "2022-03-15T16:40:53.007Z",
+      "date_updated": "2022-03-15T16:40:53.007Z",
+      "amount": 123.45,
+      "payment_due": "2022-10-09"
+    }
+  },
+  {
+    "model": "contracts.contract",
+    "pk": 5,
+    "fields": {
+      "sales_contact": 5,
+      "client": 5,
+      "status": true,
+      "date_created": "2022-02-26T14:59:15.338Z",
+      "date_updated": "2022-02-26T14:59:15.338Z",
+      "amount": 1000.0,
+      "payment_due": "2022-02-27"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 1,
+    "fields": {
+      "contract": 1,
+      "name": "Upcoming with support",
+      "location": "Le Shed",
+      "date_created": "2022-02-26T15:00:28.520Z",
+      "date_updated": "2022-03-07T08:56:11.857Z",
+      "support_contact": 3,
+      "event_status": false,
+      "attendees": 160,
+      "event_date": "2022-03-06T17:00:00Z",
+      "notes": "Example note"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 2,
+    "fields": {
+      "contract": 3,
+      "name": "Upcoming no support",
+      "location": null,
+      "date_created": "2022-03-07T08:49:08.867Z",
+      "date_updated": "2022-03-07T14:06:24.861Z",
+      "support_contact": null,
+      "event_status": false,
+      "attendees": 60,
+      "event_date": "2022-09-17T16:00:00Z",
+      "notes": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 3,
+    "fields": {
+      "contract": 4,
+      "name": "Finished event",
+      "location": "Asau, Samoa",
+      "date_created": "2022-03-07T08:55:01.237Z",
+      "date_updated": "2022-03-07T08:55:01.237Z",
+      "support_contact": 3,
+      "event_status": true,
+      "attendees": 78,
+      "event_date": "2022-11-17T11:00:00Z",
+      "notes": "Note"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 5,
+    "fields": {
+      "contract": 5,
+      "name": "Extra event",
+      "location": null,
+      "date_created": "2022-02-26T15:00:28.520Z",
+      "date_updated": "2022-03-07T08:56:11.857Z",
+      "support_contact": 6,
+      "event_status": false,
+      "attendees": 160,
+      "event_date": "2022-03-06T17:00:00Z",
+      "notes": ""
+    }
+  }
+]
