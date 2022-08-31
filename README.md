@@ -59,6 +59,7 @@ Improvements made to this project include:
 - Providing custom management commands to create dummy data
 - Optimising test coverage
 - Improving the admin site interface with Jazzmin
+- Implementing a CI workflow for automating tests
 - General project refactoring
 
 # Local development
